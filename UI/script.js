@@ -21,7 +21,7 @@ imageInput.onchange = (event) => {
 };
 moveBtn.addEventListener('mousedown', (evt) => {
     isDown = true;
-    dissableScroll();
+    disableScroll();
     mousePosition = {
         x: evt.clientX,
         y: evt.clientY
@@ -46,7 +46,7 @@ document.addEventListener('mousemove', (e) => {
     };
     setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
 });
-function dissableScroll() {
+function disableScroll() {
     document.body.style.overflow = 'hidden';
 }
 function enableScroll() {

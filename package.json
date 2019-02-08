@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc & electron .",
-    "build-installer": "electron-builder"
+    "start": "npm run build & electron .",
+    "build-installer": "electron-builder",
+    "build" : "tsc & npm run sass",
+    "sass": "node-sass ./ -o ./"
   },
   "author": "",
   "license": "ISC",

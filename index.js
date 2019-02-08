@@ -11,9 +11,9 @@ function start() {
         transparent: true,
     });
     window.loadURL(`file://${__dirname}/UI/index.html`);
-    // window.webContents.on('did-finish-load', function () {
-    //     window.webContents.openDevTools();
-    // });
+    window.webContents.on('did-finish-load', function () {
+        window.webContents.openDevTools();
+    });
     window.on("closed", () => {
         process.exit();
     });
