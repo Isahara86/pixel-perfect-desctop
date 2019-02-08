@@ -1,0 +1,41 @@
+# angular compiled output
+**/dist
+**/dist-server
+**/dist-dev
+**/tmp
+**/out-tsc
+
+**.idea
+**/vendor/
+**.vscode
+
+# dependencies
+**/node_modules
+
+# IDEs and editors
+**/.project
+**/.classpath
+**/.c9/
+**/*.launch
+**/.settings/
+**/.sublime-workspace
+
+# misc
+**/.sass-cache
+**/connect.lock
+**/coverage
+**/libpeerconnection.log
+**/npm-debug.log
+**/testem.log
+**/typings
+**/package-lock.json
+
+# e2e
+**/e2e/*.js
+**/e2e/*.map
+
+# System Files
+**/.DS_Store
+**/Thumbs.db
+/src/front-end/yarn.lock
+.angulardoc.json
