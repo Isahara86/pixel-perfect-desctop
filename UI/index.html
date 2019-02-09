@@ -8,24 +8,14 @@
 <link rel="stylesheet" href="style.css">
 <body>
 
-<div id="moveBtn"
-     style="z-index: 1000;
-     position: fixed;
-     top: 10px;
-     left: 10px;
-     width: 30px;
-     height: 30px;
-     background-color: white;
-     background-image: url('./img/move-arrows.png');
-     background-size: contain;"></div>
+<div id="moveBtn" class="move-btn"></div>
 
-<input id="imgInput" type="file" accept=".jpeg,.png"
-       style="z-index: 1000;
-     position: fixed;
-     top: 10px;
-     left: 50px;">
+<input id="imgInput" type="file" accept=".jpg,.jpeg,.png" class="image-input">
 
-<p id="choseImage" style="font-family: Roboto, 'Helvetica Neue', sans-serif; font-size: 35px" >Chose an image</p>
+<div id="minimizeBtn" class="minimize-btn"></div>
+<div id="closeBtn" class="close-btn"></div>
+
+<p id="choseImage" class="chose-image-text" >Chose an image</p>
 
 <img id="image" style="opacity: 0.5;"/>
 <script src="script.js"></script>

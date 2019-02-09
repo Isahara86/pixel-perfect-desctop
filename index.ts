@@ -11,6 +11,8 @@ function start() {
         alwaysOnTop: true,
         frame: false,
         transparent: true,
+        minHeight: 250,
+        minWidth: 250,
     });
 
     window.loadURL(`file://${__dirname}/UI/index.html`);

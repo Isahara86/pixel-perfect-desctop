@@ -2,3 +2,45 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box; }
+
+.move-btn {
+  z-index: 1000;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  background-image: url("./img/move-arrows.png");
+  background-size: contain; }
+
+.image-input {
+  z-index: 1000;
+  position: fixed;
+  top: 10px;
+  left: 50px; }
+
+.chose-image-text {
+  position: fixed;
+  top: 30px;
+  left: 80px;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-size: 35px; }
+
+.minimize-btn {
+  position: fixed;
+  top: 10px;
+  right: 40px;
+  background-image: url("./img/minimize-icon-20.png");
+  background-size: cover;
+  width: 30px;
+  height: 30px; }
+
+.close-btn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-image: url("./img/close-icon-17.png");
+  background-size: cover;
+  width: 30px;
+  height: 30px; }

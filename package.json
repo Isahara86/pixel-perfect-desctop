@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run build & electron .",
     "build-installer": "electron-builder",
-    "build" : "tsc & npm run sass",
+    "build": "tsc & npm run sass",
     "sass": "node-sass ./ -o ./"
   },
   "author": "",

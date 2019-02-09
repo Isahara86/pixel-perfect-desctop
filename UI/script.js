@@ -1,9 +1,13 @@
 "use strict";
 const { remote } = window.require('electron');
 const setWindowPosition = remote.getGlobal('setWindowPosition');
+const minimize = remote.getGlobal('minimize');
+const closeWindow = remote.getGlobal('close');
 const imageInput = document.getElementById('imgInput');
 const image = document.getElementById('image');
 const moveBtn = document.getElementById('moveBtn');
+const minimizeBtn = document.getElementById('minimizeBtn');
+const closeBtn = document.getElementById('closeBtn');
 let isDown = false;
 let mousePosition;
 let isChoseImageHiden = false;
@@ -18,6 +22,14 @@ imageInput.onchange = (event) => {
         image.width = image.naturalWidth;
         image.height = image.naturalHeight;
     };
+};
+// @ts-ignore
+minimizeBtn.onclick = () => {
+    minimize();
+};
+// @ts-ignore
+closeBtn.onclick = () => {
+    closeWindow();
 };
 moveBtn.addEventListener('mousedown', (evt) => {
     isDown = true;

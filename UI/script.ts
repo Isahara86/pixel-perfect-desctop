@@ -1,13 +1,19 @@
 import SetWindowPosition = PixelPerfectDesktop.SetWindowPosition;
+import MinimizeFunc = PixelPerfectDesktop.MinimizeFunc;
+import CloseFunc = PixelPerfectDesktop.CloseFunc;
 
 const {remote} = (<any>window).require('electron');
 
 const setWindowPosition: SetWindowPosition = remote.getGlobal('setWindowPosition');
+const minimize: MinimizeFunc = remote.getGlobal('minimize');
+const closeWindow: CloseFunc = remote.getGlobal('close');
 
 
 const imageInput = <any>document.getElementById('imgInput');
 const image = <any>document.getElementById('image');
 const moveBtn = <any>document.getElementById('moveBtn');
+const minimizeBtn = document.getElementById('minimizeBtn');
+const closeBtn = document.getElementById('closeBtn');
 
 let isDown = false;
 let mousePosition: { x: number, y: number };
@@ -30,6 +36,16 @@ imageInput.onchange = (event: any) => {
     }
 };
 
+// @ts-ignore
+minimizeBtn.onclick = () => {
+    minimize();
+};
+
+// @ts-ignore
+closeBtn.onclick = () => {
+    closeWindow();
+};
+
 moveBtn.addEventListener('mousedown', (evt: any) => {
     isDown = true;
     disableScroll();
@@ -49,7 +65,7 @@ document.addEventListener('mouseup', () => {
 }, true);
 
 // @ts-ignore
-document.addEventListener( 'mousemove' , (e: any) => {
+document.addEventListener('mousemove', (e: any) => {
     e.preventDefault();
     if (!isDown) {
         return;
@@ -68,7 +84,7 @@ function disableScroll() {
     document.body.style.overflow = 'hidden';
 }
 
-function enableScroll () {
+function enableScroll() {
     document.body.style.overflow = '';
 }
 
