@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build & electron .",
-    "build-installer": "electron-builder",
+    "build-installer": "npm run build & electron-builder",
     "build": "tsc & npm run sass",
     "sass": "node-sass ./ -o ./"
   },
