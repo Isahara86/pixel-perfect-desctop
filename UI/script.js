@@ -58,11 +58,14 @@ document.addEventListener('mousemove', (e) => {
     };
     setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
 });
+const imgContainer = document.getElementById('imgContainer');
 function disableScroll() {
-    document.body.style.overflow = 'hidden';
+    // @ts-ignore
+    imgContainer.style.overflow = 'hidden';
 }
 function enableScroll() {
-    document.body.style.overflow = '';
+    // @ts-ignore
+    imgContainer.style.overflow = '';
 }
 /////////////////////////////// slider ////////////////////////////////
 const slider = document.getElementById('slider');

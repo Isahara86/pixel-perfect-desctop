@@ -7,23 +7,29 @@
 </head>
 <link rel="stylesheet" href="style.css">
 <body>
+<main class="main">
+    <div class="main__toolbar toolbar">
+        <div id="moveBtn" class="move-btn"></div>
 
-<div id="moveBtn" class="move-btn"></div>
+        <input id="imgInput" type="file" accept=".jpg,.jpeg,.png" class="image-input">
 
-<input id="imgInput" type="file" accept=".jpg,.jpeg,.png" class="image-input">
+        <div class="opacity">
+            <div id="slider" class="slider">
+                <div id="sliderPicker" class="slider__picker"></div>
+            </div>
+        </div>
 
-<div id="minimizeBtn" class="minimize-btn"></div>
-<div id="closeBtn" class="close-btn"></div>
-
-<p id="choseImage" class="chose-image-text" >Chose an image</p>
-
-<div class="opacity">
-    <div id="slider" class="slider">
-        <div id="sliderPicker" class="slider__picker"></div>
+        <div id="minimizeBtn" class="minimize-btn"></div>
+        <div id="closeBtn" class="close-btn"></div>
     </div>
-</div>
 
-<img id="image" style="opacity: 0.5;"/>
+    <p id="choseImage" class="chose-image-text">Chose an image</p>
+
+    <div id="imgContainer" class="main__img img-container">
+        <img id="image" style="opacity: 0.5;"/>
+    </div>
+</main>
+
 <script src="script.js"></script>
 
 </body>
