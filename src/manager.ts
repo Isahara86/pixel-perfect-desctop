@@ -1,4 +1,5 @@
 import AppGlobal = PixelPerfectDesktop.AppGlobal;
+import settingsModule from './settings.module';
 
 const globalObj: AppGlobal = <any>global;
 
@@ -25,4 +26,5 @@ export function init() {
     globalObj.setWindowPosition = setWindowPosition;
     globalObj.minimize = minimize;
     globalObj.close = close;
+    globalObj.settingsModule = settingsModule;
 }

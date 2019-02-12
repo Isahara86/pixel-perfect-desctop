@@ -1,12 +1,15 @@
 import SetWindowPosition = PixelPerfectDesktop.SetWindowPosition;
 import MinimizeFunc = PixelPerfectDesktop.MinimizeFunc;
 import CloseFunc = PixelPerfectDesktop.CloseFunc;
+import ISettings = PixelPerfectDesktop.ISettings;
+import SettingsModuleLike = PixelPerfectDesktop.SettingsModuleLike;
 
 const {remote} = (<any>window).require('electron');
 
 const setWindowPosition: SetWindowPosition = remote.getGlobal('setWindowPosition');
 const minimize: MinimizeFunc = remote.getGlobal('minimize');
 const closeWindow: CloseFunc = remote.getGlobal('close');
+const settingsModule: SettingsModuleLike = remote.getGlobal('settingsModule');
 
 
 const imageInput = <any>document.getElementById('imgInput');
@@ -14,26 +17,23 @@ const image = <any>document.getElementById('image');
 const moveBtn = <any>document.getElementById('moveBtn');
 const minimizeBtn = document.getElementById('minimizeBtn');
 const closeBtn = document.getElementById('closeBtn');
+const slider = document.getElementById('slider');
+const sliderPicker = document.getElementById('sliderPicker');
+const imgContainer = document.getElementById('imgContainer');
 
+
+let saveTimeoutID: any;
+let isSliderActive = false;
 let isDown = false;
 let mousePosition: { x: number, y: number };
-
 let isChoseImageHidden = false;
 
+initUI();
+
 imageInput.onchange = (event: any) => {
-    if (!isChoseImageHidden) {
-        // @ts-ignore
-        document.getElementById('choseImage').style.display = 'none';
-    }
-
-    const files = event.target.files;
-
-    image.src = files[0].path;
-
-    image.onload = function () {
-        image.width = image.naturalWidth;
-        image.height = image.naturalHeight;
-    }
+    const imgPath = event.target.files[0].path;
+    settingsModule.setImagePath(imgPath);
+    updateImage(imgPath);
 };
 
 // @ts-ignore
@@ -80,8 +80,6 @@ document.addEventListener('mousemove', (e: any) => {
     setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
 });
 
-const imgContainer = document.getElementById('imgContainer');
-
 function disableScroll() {
     // @ts-ignore
     imgContainer.style.overflow = 'hidden';
@@ -93,12 +91,6 @@ function enableScroll() {
 }
 
 /////////////////////////////// slider ////////////////////////////////
-
-const slider = document.getElementById('slider');
-const sliderPicker = document.getElementById('sliderPicker');
-
-let isSliderActive = false;
-
 // @ts-ignore
 sliderPicker.onmousedown = (e: MouseEvent) => {
     e.preventDefault();
@@ -119,30 +111,82 @@ document.onmousemove = function (e: MouseEvent) {
     e.preventDefault();
 
     if (isSliderActive) {
+        // // @ts-ignore
+        // const pickerOffset = sliderPicker.getBoundingClientRect().width / 2;
+        // // @ts-ignore
+        // const mouseX = e.clientX - slider.getBoundingClientRect().left - pickerOffset;
+        // // @ts-ignore
+        // const sliderSize = slider.getBoundingClientRect().width;
+        //
+        // let sliderPickerLeft = mouseX;
+        //
+        // if (mouseX > sliderSize - pickerOffset * 2) {
+        //     // @ts-ignore
+        //     sliderPickerLeft = sliderSize - pickerOffset * 2;
+        // } else if (mouseX < 0) {
+        //     // @ts-ignore
+        //     sliderPickerLeft = 0;
+        // }
+        //
+        // const opacity = (sliderPickerLeft / (sliderSize - pickerOffset * 2)).toFixed(3);
+
         // @ts-ignore
-        const pickerOffset = sliderPicker.getBoundingClientRect().width / 2;
-        // @ts-ignore
-        const mouseX = e.clientX - slider.getBoundingClientRect().left - pickerOffset;
+        const pickerOffset = sliderPicker.getBoundingClientRect().width;
         // @ts-ignore
         const sliderSize = slider.getBoundingClientRect().width;
-
-        let sliderPickerLeft = mouseX;
-
-        if (mouseX > sliderSize - pickerOffset * 2) {
-            // @ts-ignore
-            sliderPickerLeft = sliderSize - pickerOffset * 2;
-        } else if (mouseX < 0) {
-            // @ts-ignore
-            sliderPickerLeft = 0;
-        }
+        const sliderMaxPosPX = sliderSize - pickerOffset;
         // @ts-ignore
-        sliderPicker.style.left = sliderPickerLeft + 'px';
+        let opacity = (e.clientX - slider.getBoundingClientRect().left) / sliderMaxPosPX;
 
-        image.style.opacity = (sliderPickerLeft / (sliderSize - pickerOffset * 2)).toFixed(3);
+        if (opacity > sliderMaxPosPX / sliderSize) {
+            // @ts-ignore
+            opacity = sliderMaxPosPX / sliderSize;
+        } else if (opacity < 0) {
+            // @ts-ignore
+            opacity = 0;
+        }
 
-        console.log((sliderPickerLeft / (sliderSize - pickerOffset * 2)).toFixed(3))
+        updateOpacity(opacity);
 
+        if (saveTimeoutID) {
+            clearTimeout(saveTimeoutID);
+            saveTimeoutID = null;
+        }
+        saveTimeoutID = setTimeout(() => {
+            settingsModule.setOpacity(opacity);
+        }, 1000);
     }
 };
 
+function updateOpacity(opacity: number) {
+    // @ts-ignore
+    sliderPicker.style.left = opacity * 100 + '%';
+
+    image.style.opacity = opacity;
+}
+
 /////////////////////////////// slider end ////////////////////////////////
+
+function initUI() {
+    const settings: ISettings = settingsModule.getSettings();
+
+    updateOpacity(settings.opacity);
+    if (settings.imageFilePath) {
+       updateImage(settings.imageFilePath);
+    }
+}
+
+function updateImage(imgPath: string) {
+    if (!isChoseImageHidden) {
+        // @ts-ignore
+        document.getElementById('choseImageText').style.display = 'none';
+        isChoseImageHidden = true;
+    }
+
+    image.src = imgPath;
+
+    image.onload = function () {
+        image.width = image.naturalWidth;
+        image.height = image.naturalHeight;
+    }
+}

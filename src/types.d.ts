@@ -6,6 +6,7 @@ declare namespace PixelPerfectDesktop {
         minimize: MinimizeFunc;
         close: CloseFunc;
         window: BrowserWindow;
+        settingsModule: SettingsModuleLike;
     }
 
     interface SetWindowPosition {
@@ -18,6 +19,18 @@ declare namespace PixelPerfectDesktop {
 
     interface CloseFunc {
         (): void;
+    }
+
+    interface ISettings {
+        readonly opacity: number;
+        readonly imageFilePath: string;
+    }
+
+    interface SettingsModuleLike {
+        subscribe: (cb: (settings: ISettings) => void) => () => void;
+        setOpacity: (opacity: number) => void;
+        setImagePath: (newPath: string) => void;
+        getSettings: () => ISettings;
     }
 
 }
