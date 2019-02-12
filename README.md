@@ -10,4 +10,5 @@ nodeJS v10.x
 
 ## **Next features:**
 1. Remember last preferences
-2. UI improve : add toolbar
+2. Move window with arrows
+3. App design
