@@ -18,10 +18,10 @@ const closeBtn = document.getElementById('closeBtn');
 let isDown = false;
 let mousePosition: { x: number, y: number };
 
-let isChoseImageHiden = false;
+let isChoseImageHidden = false;
 
 imageInput.onchange = (event: any) => {
-    if (!isChoseImageHiden) {
+    if (!isChoseImageHidden) {
         // @ts-ignore
         document.getElementById('choseImage').style.display = 'none';
     }
@@ -117,7 +117,6 @@ document.onmouseleave = (e: MouseEvent) => {
 
 document.onmousemove = function (e: MouseEvent) {
     e.preventDefault();
-    console.log('mousemove');
 
     if (isSliderActive) {
         // @ts-ignore
