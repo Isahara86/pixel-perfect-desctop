@@ -111,42 +111,23 @@ document.onmousemove = function (e: MouseEvent) {
     e.preventDefault();
 
     if (isSliderActive) {
-        // // @ts-ignore
-        // const pickerOffset = sliderPicker.getBoundingClientRect().width / 2;
-        // // @ts-ignore
-        // const mouseX = e.clientX - slider.getBoundingClientRect().left - pickerOffset;
-        // // @ts-ignore
-        // const sliderSize = slider.getBoundingClientRect().width;
-        //
-        // let sliderPickerLeft = mouseX;
-        //
-        // if (mouseX > sliderSize - pickerOffset * 2) {
-        //     // @ts-ignore
-        //     sliderPickerLeft = sliderSize - pickerOffset * 2;
-        // } else if (mouseX < 0) {
-        //     // @ts-ignore
-        //     sliderPickerLeft = 0;
-        // }
-        //
-        // const opacity = (sliderPickerLeft / (sliderSize - pickerOffset * 2)).toFixed(3);
 
         // @ts-ignore
-        const pickerOffset = sliderPicker.getBoundingClientRect().width;
+        const pickerSize = sliderPicker.getBoundingClientRect().width;
         // @ts-ignore
         const sliderSize = slider.getBoundingClientRect().width;
-        const sliderMaxPosPX = sliderSize - pickerOffset;
         // @ts-ignore
-        let opacity = (e.clientX - slider.getBoundingClientRect().left) / sliderMaxPosPX;
+        let opacity = (e.clientX - slider.getBoundingClientRect().left) / sliderSize;
 
-        if (opacity > sliderMaxPosPX / sliderSize) {
-            // @ts-ignore
-            opacity = sliderMaxPosPX / sliderSize;
+        opacity = Math.round(opacity * 1000) / 1000;
+
+        if (opacity > 1) {
+            opacity = 1;
         } else if (opacity < 0) {
-            // @ts-ignore
             opacity = 0;
         }
 
-        updateOpacity(opacity);
+        updateOpacity(opacity, sliderSize, pickerSize);
 
         if (saveTimeoutID) {
             clearTimeout(saveTimeoutID);
@@ -158,9 +139,9 @@ document.onmousemove = function (e: MouseEvent) {
     }
 };
 
-function updateOpacity(opacity: number) {
+function updateOpacity(opacity: number, sliderSize: number, pickerSize: number) {
     // @ts-ignore
-    sliderPicker.style.left = opacity * 100 + '%';
+    sliderPicker.style.left = Math.round(sliderSize * opacity - pickerSize / 2) + 'px';
 
     image.style.opacity = opacity;
 }
@@ -170,9 +151,14 @@ function updateOpacity(opacity: number) {
 function initUI() {
     const settings: ISettings = settingsModule.getSettings();
 
-    updateOpacity(settings.opacity);
+    // @ts-ignore
+    const pickerSize = sliderPicker.getBoundingClientRect().width;
+    // @ts-ignore
+    const sliderSize = slider.getBoundingClientRect().width;
+
+    updateOpacity(settings.opacity, sliderSize, pickerSize);
     if (settings.imageFilePath) {
-       updateImage(settings.imageFilePath);
+        updateImage(settings.imageFilePath);
     }
 }
 

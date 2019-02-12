@@ -9,6 +9,8 @@ nodeJS v10.x
 
 
 ## **Next features:**
-1. Remember last preferences
-2. Move window with arrows
-3. App design
+1. Move window with arrows
+2. App design
+3. Remember window size
+4. Remember window scroll
+
