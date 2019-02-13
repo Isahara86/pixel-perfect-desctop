@@ -13,6 +13,12 @@ class SettingsModule {
     constructor() {
         this._dataFilePath = path.join(__dirname, './data.json');
         this._subscribers = [];
+        if (__dirname.includes('resources')) {
+            this._dataFilePath = path.join(__dirname, '../../data.json');
+        }
+        else {
+            this._dataFilePath = path.join(__dirname, './data.json');
+        }
         this._settings = this._loadSettings();
     }
     _loadSettings() {

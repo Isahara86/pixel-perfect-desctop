@@ -19,5 +19,12 @@
   },
   "dependencies": {
     "fs-extra": "^7.0.1"
+  },
+  "build": {
+    "asar": true,
+    "files": [
+      "!**/*.ts",
+      "!src/data.json"
+    ]
   }
 }
