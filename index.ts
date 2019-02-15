@@ -1,8 +1,5 @@
 import {app, BrowserWindow} from 'electron';
 import {init} from "./src/manager";
-import AppGlobal = PixelPerfectDesktop.AppGlobal;
-
-const globalObj: AppGlobal = <any>global;
 
 app.on('ready', start);
 
@@ -13,21 +10,16 @@ function start() {
         transparent: true,
         minHeight: 250,
         minWidth: 250,
+        show: false,
     });
 
     window.loadURL(`file://${__dirname}/UI/index.html`);
-
-    window.webContents.on('did-finish-load', function () {
-        window.webContents.openDevTools();
-    });
 
     window.on("closed", () => {
         process.exit();
     });
 
-    globalObj.window = window;
-
-    init();
+    init(window);
 }
 
 

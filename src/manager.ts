@@ -1,12 +1,12 @@
 import AppGlobal = PixelPerfectDesktop.AppGlobal;
-import settingsModule from './settings.module';
+import storeModule from './store.module';
+import BrowserWindow = Electron.BrowserWindow;
+import {promises} from "fs";
 
 const globalObj: AppGlobal = <any>global;
+let window: BrowserWindow;
 
 function setWindowPosition(x: number, y: number) {
-
-    const window = globalObj.window;
-
     const curPos = window.getPosition();
 
     window.setPosition(curPos[0] + x, curPos[1] + y);
@@ -18,13 +18,51 @@ function minimize() {
 }
 
 function close() {
-    const window = globalObj.window;
-    window.close();
+    saveState()
+        .then(() => globalObj.window.close());
 }
 
-export function init() {
+function saveState(): Promise<void> {
+
+    const bounds = window.getBounds();
+    const contentBounds = window.getContentBounds();
+
+    console.log(bounds);
+    console.log(contentBounds);
+
+    return window.webContents
+        .executeJavaScript('getScrollPosition();')
+        .then((scrollData: ScrollData) => {
+            console.log(scrollData);
+            storeModule.saveWindowState({windowBounds: bounds, scrollData});
+        });
+}
+
+function loadWindowState() {
+    const settings = storeModule.getSettings();
+
+    if (settings.windowBounds) {
+        window.setBounds(settings.windowBounds);
+    }
+
+    if (settings.scrollData) {
+        window.webContents
+            .executeJavaScript(`setScroll(${JSON.stringify(settings.scrollData)});`)
+    }
+}
+
+export function init(newWindow: BrowserWindow) {
     globalObj.setWindowPosition = setWindowPosition;
     globalObj.minimize = minimize;
     globalObj.close = close;
-    globalObj.settingsModule = settingsModule;
+    globalObj.storeModule = storeModule;
+    globalObj.window = newWindow;
+
+    window = newWindow;
+
+    window.webContents.on('did-finish-load', () => {
+        loadWindowState();
+        window.show();
+        window.webContents.openDevTools();
+    });
 }

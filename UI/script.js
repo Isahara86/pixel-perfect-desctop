@@ -3,7 +3,7 @@ const { remote } = window.require('electron');
 const setWindowPosition = remote.getGlobal('setWindowPosition');
 const minimize = remote.getGlobal('minimize');
 const closeWindow = remote.getGlobal('close');
-const settingsModule = remote.getGlobal('settingsModule');
+const storeModule = remote.getGlobal('storeModule');
 const imageInput = document.getElementById('imgInput');
 const image = document.getElementById('image');
 const moveBtn = document.getElementById('moveBtn');
@@ -20,7 +20,7 @@ let isChoseImageHidden = false;
 initUI();
 imageInput.onchange = (event) => {
     const imgPath = event.target.files[0].path;
-    settingsModule.setImagePath(imgPath);
+    storeModule.setImagePath(imgPath);
     updateImage(imgPath);
 };
 // @ts-ignore
@@ -102,7 +102,7 @@ document.onmousemove = function (e) {
             saveTimeoutID = null;
         }
         saveTimeoutID = setTimeout(() => {
-            settingsModule.setOpacity(opacity);
+            storeModule.setOpacity(opacity);
         }, 1000);
     }
 };
@@ -113,7 +113,7 @@ function updateOpacity(opacity, sliderSize, pickerSize) {
 }
 /////////////////////////////// slider end ////////////////////////////////
 function initUI() {
-    const settings = settingsModule.getSettings();
+    const settings = storeModule.getSettings();
     // @ts-ignore
     const pickerSize = sliderPicker.getBoundingClientRect().width;
     // @ts-ignore
@@ -134,4 +134,32 @@ function updateImage(imgPath) {
         image.width = image.naturalWidth;
         image.height = image.naturalHeight;
     };
+}
+document.onkeydown = (e) => {
+    switch (e.code) {
+        case 'ArrowUp':
+            setWindowPosition(0, -1);
+            break;
+        case 'ArrowDown':
+            setWindowPosition(0, 1);
+            break;
+        case 'ArrowLeft':
+            setWindowPosition(-1, 0);
+            break;
+        case 'ArrowRight':
+            setWindowPosition(1, 0);
+            break;
+    }
+};
+function getScrollPosition() {
+    // @ts-ignore
+    return { top: imgContainer.scrollTop, left: imgContainer.scrollLeft };
+}
+function setScroll(scrollData) {
+    // console.log(scrollDataJson);
+    // const scrollData: ScrollData = JSON.parse(scrollDataJson);
+    // @ts-ignore
+    imgContainer.scrollTop = scrollData.top;
+    // @ts-ignore
+    imgContainer.scrollLeft = scrollData.left;
 }

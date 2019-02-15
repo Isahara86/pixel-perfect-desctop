@@ -2,14 +2,15 @@ import SetWindowPosition = PixelPerfectDesktop.SetWindowPosition;
 import MinimizeFunc = PixelPerfectDesktop.MinimizeFunc;
 import CloseFunc = PixelPerfectDesktop.CloseFunc;
 import ISettings = PixelPerfectDesktop.ISettings;
-import SettingsModuleLike = PixelPerfectDesktop.SettingsModuleLike;
+import StoreModuleLike = PixelPerfectDesktop.StoreModuleLike;
+import ScrollData = PixelPerfectDesktop.ScrollData;
 
 const {remote} = (<any>window).require('electron');
 
 const setWindowPosition: SetWindowPosition = remote.getGlobal('setWindowPosition');
 const minimize: MinimizeFunc = remote.getGlobal('minimize');
 const closeWindow: CloseFunc = remote.getGlobal('close');
-const settingsModule: SettingsModuleLike = remote.getGlobal('settingsModule');
+const storeModule: StoreModuleLike = remote.getGlobal('storeModule');
 
 
 const imageInput = <any>document.getElementById('imgInput');
@@ -32,7 +33,7 @@ initUI();
 
 imageInput.onchange = (event: any) => {
     const imgPath = event.target.files[0].path;
-    settingsModule.setImagePath(imgPath);
+    storeModule.setImagePath(imgPath);
     updateImage(imgPath);
 };
 
@@ -134,7 +135,7 @@ document.onmousemove = function (e: MouseEvent) {
             saveTimeoutID = null;
         }
         saveTimeoutID = setTimeout(() => {
-            settingsModule.setOpacity(opacity);
+            storeModule.setOpacity(opacity);
         }, 1000);
     }
 };
@@ -149,7 +150,7 @@ function updateOpacity(opacity: number, sliderSize: number, pickerSize: number) 
 /////////////////////////////// slider end ////////////////////////////////
 
 function initUI() {
-    const settings: ISettings = settingsModule.getSettings();
+    const settings: ISettings = storeModule.getSettings();
 
     // @ts-ignore
     const pickerSize = sliderPicker.getBoundingClientRect().width;
@@ -175,4 +176,34 @@ function updateImage(imgPath: string) {
         image.width = image.naturalWidth;
         image.height = image.naturalHeight;
     }
+}
+
+
+document.onkeydown = (e: KeyboardEvent) => {
+    switch (e.code) {
+        case 'ArrowUp':
+            setWindowPosition(0, -1);
+            break;
+        case 'ArrowDown':
+            setWindowPosition(0, 1);
+            break;
+        case 'ArrowLeft':
+            setWindowPosition(-1, 0);
+            break;
+        case 'ArrowRight':
+            setWindowPosition(1, 0);
+            break;
+    }
+};
+
+function getScrollPosition(): ScrollData {
+    // @ts-ignore
+    return { top: imgContainer.scrollTop, left: imgContainer.scrollLeft }
+}
+
+function setScroll(scrollData: ScrollData) {
+    // @ts-ignore
+    imgContainer.scrollTop  = scrollData.top;
+    // @ts-ignore
+    imgContainer.scrollLeft = scrollData.left;
 }

@@ -9,7 +9,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fse = __importStar(require("fs-extra"));
 const path = __importStar(require("path"));
-class SettingsModule {
+class StoreModule {
     constructor() {
         this._dataFilePath = path.join(__dirname, './data.json');
         this._subscribers = [];
@@ -29,6 +29,16 @@ class SettingsModule {
             return {
                 opacity: 0.7,
                 imageFilePath: 'no-file.jpeg',
+                windowBounds: {
+                    height: 600,
+                    width: 800,
+                    x: 0,
+                    y: 0,
+                },
+                scrollData: {
+                    top: 0,
+                    left: 0,
+                },
             };
         }
     }
@@ -59,5 +69,9 @@ class SettingsModule {
     getSettings() {
         return this._settings;
     }
+    saveWindowState(data) {
+        this._settings = Object.assign({}, this._settings, data);
+        this.saveAndNotify();
+    }
 }
-exports.default = new SettingsModule();
+exports.default = new StoreModule();

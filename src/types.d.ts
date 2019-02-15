@@ -1,12 +1,13 @@
 declare namespace PixelPerfectDesktop {
     import BrowserWindow = Electron.BrowserWindow;
+    import Rectangle = Electron.Rectangle;
 
     interface AppGlobal {
         setWindowPosition: SetWindowPosition;
         minimize: MinimizeFunc;
         close: CloseFunc;
         window: BrowserWindow;
-        settingsModule: SettingsModuleLike;
+        storeModule: StoreModuleLike;
     }
 
     interface SetWindowPosition {
@@ -24,13 +25,20 @@ declare namespace PixelPerfectDesktop {
     interface ISettings {
         readonly opacity: number;
         readonly imageFilePath: string;
+        readonly windowBounds: Rectangle;
+        readonly scrollData: ScrollData;
     }
 
-    interface SettingsModuleLike {
+    interface StoreModuleLike {
         subscribe: (cb: (settings: ISettings) => void) => () => void;
         setOpacity: (opacity: number) => void;
         setImagePath: (newPath: string) => void;
         getSettings: () => ISettings;
+    }
+
+    interface ScrollData {
+        top: number;
+        left: number;
     }
 
 }

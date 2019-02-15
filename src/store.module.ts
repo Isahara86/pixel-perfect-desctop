@@ -1,11 +1,12 @@
 import ISettings = PixelPerfectDesktop.ISettings;
 import * as fse from 'fs-extra';
 import * as path from "path";
-import SettingsModuleLike = PixelPerfectDesktop.SettingsModuleLike;
+import SettingsModuleLike = PixelPerfectDesktop.StoreModuleLike;
+import Rectangle = Electron.Rectangle;
 
-class SettingsModule implements SettingsModuleLike {
+class StoreModule implements SettingsModuleLike {
 
-    private readonly _settings: ISettings;
+    private _settings: ISettings;
     private readonly _dataFilePath = path.join(__dirname, './data.json');
     private _subscribers: any[] = [];
 
@@ -28,6 +29,16 @@ class SettingsModule implements SettingsModuleLike {
             return {
                 opacity: 0.7,
                 imageFilePath: 'no-file.jpeg',
+                windowBounds: {
+                    height: 600,
+                    width: 800,
+                    x: 0,
+                    y: 0,
+                },
+                scrollData: {
+                    top: 0,
+                    left: 0,
+                },
             }
         }
     }
@@ -66,6 +77,11 @@ class SettingsModule implements SettingsModuleLike {
     getSettings(): ISettings {
         return this._settings;
     }
+
+    saveWindowState(data: { windowBounds: Rectangle, scrollData: ScrollData }): void {
+        this._settings = {...this._settings, ...data};
+        this.saveAndNotify();
+    }
 }
 
-export default new SettingsModule();
+export default new StoreModule();
