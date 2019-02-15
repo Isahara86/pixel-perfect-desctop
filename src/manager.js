@@ -36,8 +36,7 @@ function loadWindowState() {
         window.setBounds(settings.windowBounds);
     }
     if (settings.scrollData) {
-        window.webContents
-            .executeJavaScript(`setScroll(${JSON.stringify(settings.scrollData)});`);
+        window.webContents.executeJavaScript(`setScroll(${JSON.stringify(settings.scrollData)});`);
     }
 }
 function init(newWindow) {
@@ -50,7 +49,7 @@ function init(newWindow) {
     window.webContents.on('did-finish-load', () => {
         loadWindowState();
         window.show();
-        window.webContents.openDevTools();
+        // window.webContents.openDevTools();
     });
 }
 exports.init = init;

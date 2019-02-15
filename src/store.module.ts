@@ -29,16 +29,10 @@ class StoreModule implements SettingsModuleLike {
             return {
                 opacity: 0.7,
                 imageFilePath: 'no-file.jpeg',
-                windowBounds: {
-                    height: 600,
-                    width: 800,
-                    x: 0,
-                    y: 0,
-                },
-                scrollData: {
-                    top: 0,
-                    left: 0,
-                },
+                // @ts-ignore
+                windowBounds: null,
+                // @ts-ignore
+                scrollData: null,
             }
         }
     }

@@ -156,8 +156,6 @@ function getScrollPosition() {
     return { top: imgContainer.scrollTop, left: imgContainer.scrollLeft };
 }
 function setScroll(scrollData) {
-    // console.log(scrollDataJson);
-    // const scrollData: ScrollData = JSON.parse(scrollDataJson);
     // @ts-ignore
     imgContainer.scrollTop = scrollData.top;
     // @ts-ignore

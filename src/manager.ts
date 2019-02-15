@@ -46,8 +46,7 @@ function loadWindowState() {
     }
 
     if (settings.scrollData) {
-        window.webContents
-            .executeJavaScript(`setScroll(${JSON.stringify(settings.scrollData)});`)
+        window.webContents.executeJavaScript(`setScroll(${JSON.stringify(settings.scrollData)});`)
     }
 }
 
@@ -63,6 +62,6 @@ export function init(newWindow: BrowserWindow) {
     window.webContents.on('did-finish-load', () => {
         loadWindowState();
         window.show();
-        window.webContents.openDevTools();
+        // window.webContents.openDevTools();
     });
 }

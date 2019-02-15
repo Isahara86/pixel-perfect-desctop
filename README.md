@@ -15,5 +15,7 @@ nodeJS v10.x
 4. Remember window size (DONE)
 5. Remember window scroll (DONE)
 6. Code refactoring
+7. Auto off devtools when built
+8. Add window border
 
 
