@@ -16,8 +16,9 @@ nodeJS v10.x
 5. Remember window scroll (DONE)
 6. Refactor UI script
 7. Auto off devtools when built (DONE)
-8. Add window border ?
+8. Add window border (DONE)
 9. Save UI state when app close
+10. Customize scroll view
 
 
 
