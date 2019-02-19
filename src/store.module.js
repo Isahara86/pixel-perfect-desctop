@@ -11,9 +11,9 @@ const fse = __importStar(require("fs-extra"));
 const path = __importStar(require("path"));
 class StoreModule {
     constructor() {
-        this._dataFilePath = path.join(__dirname, './data.json');
         this._subscribers = [];
-        if (__dirname.includes('resources')) {
+        this.isProd = __dirname.includes('resources');
+        if (this.isProd) {
             this._dataFilePath = path.join(__dirname, '../../data.json');
         }
         else {

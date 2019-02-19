@@ -20,13 +20,9 @@ function close() {
 }
 function saveState() {
     const bounds = window.getBounds();
-    const contentBounds = window.getContentBounds();
-    console.log(bounds);
-    console.log(contentBounds);
     return window.webContents
         .executeJavaScript('getScrollPosition();')
         .then((scrollData) => {
-        console.log(scrollData);
         store_module_1.default.saveWindowState({ windowBounds: bounds, scrollData });
     });
 }
@@ -49,7 +45,9 @@ function init(newWindow) {
     window.webContents.on('did-finish-load', () => {
         loadWindowState();
         window.show();
-        // window.webContents.openDevTools();
+        if (!store_module_1.default.isProd) {
+            window.webContents.openDevTools();
+        }
     });
 }
 exports.init = init;

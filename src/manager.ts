@@ -1,7 +1,6 @@
 import AppGlobal = PixelPerfectDesktop.AppGlobal;
 import storeModule from './store.module';
 import BrowserWindow = Electron.BrowserWindow;
-import {promises} from "fs";
 
 const globalObj: AppGlobal = <any>global;
 let window: BrowserWindow;
@@ -23,17 +22,11 @@ function close() {
 }
 
 function saveState(): Promise<void> {
-
     const bounds = window.getBounds();
-    const contentBounds = window.getContentBounds();
-
-    console.log(bounds);
-    console.log(contentBounds);
 
     return window.webContents
         .executeJavaScript('getScrollPosition();')
         .then((scrollData: ScrollData) => {
-            console.log(scrollData);
             storeModule.saveWindowState({windowBounds: bounds, scrollData});
         });
 }
@@ -62,6 +55,8 @@ export function init(newWindow: BrowserWindow) {
     window.webContents.on('did-finish-load', () => {
         loadWindowState();
         window.show();
-        // window.webContents.openDevTools();
+        if (!storeModule.isProd) {
+            window.webContents.openDevTools();
+        }
     });
 }

@@ -7,11 +7,15 @@ import Rectangle = Electron.Rectangle;
 class StoreModule implements SettingsModuleLike {
 
     private _settings: ISettings;
-    private readonly _dataFilePath = path.join(__dirname, './data.json');
+    private readonly _dataFilePath: string;
+    public readonly isProd: boolean;
+
     private _subscribers: any[] = [];
 
     constructor() {
-        if (__dirname.includes('resources')) {
+        this.isProd = __dirname.includes('resources');
+
+        if (this.isProd) {
             this._dataFilePath = path.join(__dirname, '../../data.json');
         } else {
             this._dataFilePath = path.join(__dirname, './data.json');
