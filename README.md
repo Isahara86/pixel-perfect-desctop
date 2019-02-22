@@ -19,6 +19,9 @@ nodeJS v10.x
 8. Add window border (DONE)
 9. Save UI state when app close
 10. Customize scroll view
+11. Add line painting?
+12. loadWindowState call from render process
+13. Remove ts-ignore
 
 
 

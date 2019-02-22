@@ -12,7 +12,7 @@ function start() {
         minWidth: 250,
         show: false,
     });
-    window.loadURL(`file://${__dirname}/UI/index.html`);
+    window.loadURL(`file://${__dirname}/src/UI/index.html`);
     window.on("closed", () => {
         process.exit();
     });
