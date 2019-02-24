@@ -23,7 +23,7 @@ function init() {
     initOpacitySlider();
     initImageChoseBtn();
     // Must be called the latest
-    initState();
+    setMemento();
 }
 
 function initImageChoseBtn() {
@@ -92,9 +92,7 @@ function updateOpacity(opacity: number) {
 
 function updateImage(imgPath: string, callBack?: any) {
     if (!isChoseImageHidden) {
-        const choseImageText = document.getElementById('choseImageText')!;
-
-        choseImageText.style.display = 'none';
+        document.getElementById('choseImageText')!.style.display = 'none';
         isChoseImageHidden = true;
     }
 
@@ -122,15 +120,6 @@ function initMinimizeCloseButtons() {
     closeBtn.onclick = () => {
         closeWindow(getMemento());
     };
-}
-
-function initState() {
-    const uiState: UIState = storeModule.getSettings().uiState;
-
-    updateOpacity(uiState.opacity);
-    updateImage(uiState.imgPath, () => {
-        setScroll(uiState.scrollData);
-    });
 }
 
 function initWindowMove() {
@@ -202,6 +191,15 @@ function initWindowMove() {
 function setScroll(scrollData: ScrollData): void {
     imgContainer.scrollTop = scrollData.top;
     imgContainer.scrollLeft = scrollData.left;
+}
+
+function setMemento() {
+    const uiState: UIState = storeModule.getSettings().uiState;
+
+    updateOpacity(uiState.opacity);
+    updateImage(uiState.imgPath, () => {
+        setScroll(uiState.scrollData);
+    });
 }
 
 function getMemento(): UIState {
