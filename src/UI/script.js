@@ -28,14 +28,10 @@ function initOpacitySlider() {
     sliderPicker.onmousedown = (e) => {
         e.preventDefault();
         isSliderActive = true;
-        imageInput.style.cursor = 'e-resize';
-        document.body.style.cursor = 'e-resize';
     };
     document.onmouseup = (e) => {
         e.preventDefault();
         isSliderActive = false;
-        imageInput.style.cursor = '';
-        document.body.style.cursor = '';
     };
     document.onmouseleave = () => {
         isSliderActive = false;
