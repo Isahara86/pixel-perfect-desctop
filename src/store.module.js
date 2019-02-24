@@ -69,3 +69,4 @@ class StoreModule {
     }
 }
 exports.default = new StoreModule();
+//# sourceMappingURL=store.module.js.map

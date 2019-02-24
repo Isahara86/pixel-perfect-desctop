@@ -21,7 +21,6 @@ class StoreModule implements SettingsModuleLike {
             this._dataFilePath = path.join(__dirname, './data.json');
         }
 
-
         this._settings = this._loadSettings();
     }
 

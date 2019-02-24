@@ -51,3 +51,4 @@ function init(newWindow) {
     });
 }
 exports.init = init;
+//# sourceMappingURL=manager.js.map
