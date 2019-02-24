@@ -5,6 +5,7 @@ const image = document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer');
 const sliderPicker = document.getElementById('sliderPicker');
 const slider = document.getElementById('slider');
+const imageInput = document.getElementById('imgInput');
 let isChoseImageHidden = false;
 init();
 function init() {
@@ -13,10 +14,9 @@ function init() {
     initOpacitySlider();
     initImageChoseBtn();
     // Must be called the latest
-    initState();
+    setMemento();
 }
 function initImageChoseBtn() {
-    const imageInput = document.getElementById('imgInput');
     imageInput.onchange = (event) => {
         const imgPath = event.target.files[0].path;
         updateImage(imgPath);
@@ -28,10 +28,14 @@ function initOpacitySlider() {
     sliderPicker.onmousedown = (e) => {
         e.preventDefault();
         isSliderActive = true;
+        imageInput.style.cursor = 'e-resize';
+        document.body.style.cursor = 'e-resize';
     };
     document.onmouseup = (e) => {
         e.preventDefault();
         isSliderActive = false;
+        imageInput.style.cursor = '';
+        document.body.style.cursor = '';
     };
     document.onmouseleave = () => {
         isSliderActive = false;
@@ -65,8 +69,7 @@ function updateOpacity(opacity) {
 }
 function updateImage(imgPath, callBack) {
     if (!isChoseImageHidden) {
-        const choseImageText = document.getElementById('choseImageText');
-        choseImageText.style.display = 'none';
+        document.getElementById('choseImageText').style.display = 'none';
         isChoseImageHidden = true;
     }
     image.src = imgPath;
@@ -88,13 +91,6 @@ function initMinimizeCloseButtons() {
         closeWindow(getMemento());
     };
 }
-function initState() {
-    const uiState = storeModule.getSettings().uiState;
-    updateOpacity(uiState.opacity);
-    updateImage(uiState.imgPath, () => {
-        setScroll(uiState.scrollData);
-    });
-}
 function initWindowMove() {
     const setWindowPosition = remote.getGlobal('setWindowPosition');
     const moveBtn = document.getElementById('moveBtn');
@@ -102,7 +98,7 @@ function initWindowMove() {
     let mousePosition;
     moveBtn.addEventListener('mousedown', (evt) => {
         isDown = true;
-        disableScroll();
+        setUIRestore();
         mousePosition = {
             x: evt.clientX,
             y: evt.clientY
@@ -113,7 +109,7 @@ function initWindowMove() {
     };
     document.addEventListener('mouseup', () => {
         isDown = false;
-        enableScroll();
+        setUIMoving();
     }, true);
     document.addEventListener('mousemove', (e) => {
         e.preventDefault();
@@ -126,10 +122,12 @@ function initWindowMove() {
         };
         setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
     });
-    function disableScroll() {
+    function setUIRestore() {
+        moveBtn.style.cursor = '-webkit-grabbing';
         imgContainer.style.overflow = 'hidden';
     }
-    function enableScroll() {
+    function setUIMoving() {
+        moveBtn.style.cursor = '';
         imgContainer.style.overflow = '';
     }
     document.addEventListener('keydown', (e) => {
@@ -152,6 +150,13 @@ function initWindowMove() {
 function setScroll(scrollData) {
     imgContainer.scrollTop = scrollData.top;
     imgContainer.scrollLeft = scrollData.left;
+}
+function setMemento() {
+    const uiState = storeModule.getSettings().uiState;
+    updateOpacity(uiState.opacity);
+    updateImage(uiState.imgPath, () => {
+        setScroll(uiState.scrollData);
+    });
 }
 function getMemento() {
     return {

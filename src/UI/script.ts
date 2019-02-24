@@ -13,6 +13,8 @@ const image = <any>document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer')!;
 const sliderPicker = document.getElementById('sliderPicker')!;
 const slider = document.getElementById('slider')!;
+const imageInput = <HTMLInputElement>document.getElementById('imgInput')!;
+
 let isChoseImageHidden = false;
 
 init();
@@ -27,8 +29,6 @@ function init() {
 }
 
 function initImageChoseBtn() {
-    const imageInput = <HTMLInputElement>document.getElementById('imgInput')!;
-
     imageInput.onchange = (event: any) => {
         const imgPath = event.target.files[0].path;
         updateImage(imgPath);
@@ -131,7 +131,7 @@ function initWindowMove() {
 
     moveBtn.addEventListener('mousedown', (evt: any) => {
         isDown = true;
-        disableScroll();
+        setUIRestore();
         mousePosition = {
             x: evt.clientX,
             y: evt.clientY
@@ -144,7 +144,7 @@ function initWindowMove() {
 
     document.addEventListener('mouseup', () => {
         isDown = false;
-        enableScroll();
+        setUIMoving();
     }, true);
 
     document.addEventListener('mousemove', (e: any) => {
@@ -162,11 +162,13 @@ function initWindowMove() {
         setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
     });
 
-    function disableScroll() {
+    function setUIRestore() {
+        moveBtn.style.cursor = '-webkit-grabbing';
         imgContainer.style.overflow = 'hidden';
     }
 
-    function enableScroll() {
+    function setUIMoving() {
+        moveBtn.style.cursor = '';
         imgContainer.style.overflow = '';
     }
 
