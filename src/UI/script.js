@@ -5,22 +5,20 @@ const image = document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer');
 const sliderPicker = document.getElementById('sliderPicker');
 const slider = document.getElementById('slider');
-const imageInput = document.getElementById('imgInput');
 let isChoseImageHidden = false;
 init();
 function init() {
-    initMainProcessFunctions();
     initWindowMove();
     initMinimizeCloseButtons();
     initOpacitySlider();
     initImageChoseBtn();
     // Must be called the latest
-    initWindowState();
+    initState();
 }
 function initImageChoseBtn() {
+    const imageInput = document.getElementById('imgInput');
     imageInput.onchange = (event) => {
         const imgPath = event.target.files[0].path;
-        storeModule.setImagePath(imgPath);
         updateImage(imgPath);
     };
 }
@@ -40,7 +38,6 @@ function initOpacitySlider() {
     };
     document.onmousemove = function (e) {
         if (isSliderActive) {
-            const pickerSize = sliderPicker.getBoundingClientRect().width;
             const sliderSize = slider.getBoundingClientRect().width;
             let opacity = (e.clientX - slider.getBoundingClientRect().left) / sliderSize;
             opacity = Math.round(opacity * 1000) / 1000;
@@ -50,22 +47,23 @@ function initOpacitySlider() {
             else if (opacity < 0) {
                 opacity = 0;
             }
-            updateOpacity(opacity, sliderSize, pickerSize);
+            updateOpacity(opacity);
             if (saveTimeoutID) {
                 clearTimeout(saveTimeoutID);
                 saveTimeoutID = null;
             }
             saveTimeoutID = setTimeout(() => {
-                storeModule.setOpacity(opacity);
             }, 1000);
         }
     };
 }
-function updateOpacity(opacity, sliderSize, pickerSize) {
+function updateOpacity(opacity) {
+    const pickerSize = sliderPicker.getBoundingClientRect().width;
+    const sliderSize = slider.getBoundingClientRect().width;
     sliderPicker.style.left = Math.round(sliderSize * opacity - pickerSize / 2) + 'px';
     image.style.opacity = opacity;
 }
-function updateImage(imgPath) {
+function updateImage(imgPath, callBack) {
     if (!isChoseImageHidden) {
         const choseImageText = document.getElementById('choseImageText');
         choseImageText.style.display = 'none';
@@ -75,6 +73,7 @@ function updateImage(imgPath) {
     image.onload = function () {
         image.width = image.naturalWidth;
         image.height = image.naturalHeight;
+        callBack && callBack();
     };
 }
 function initMinimizeCloseButtons() {
@@ -86,18 +85,15 @@ function initMinimizeCloseButtons() {
         minimize();
     };
     closeBtn.onclick = () => {
-        closeWindow();
+        closeWindow(getMemento());
     };
 }
-function initWindowState() {
-    const settings = storeModule.getSettings();
-    const pickerSize = sliderPicker.getBoundingClientRect().width;
-    const sliderSize = slider.getBoundingClientRect().width;
-    updateOpacity(settings.opacity, sliderSize, pickerSize);
-    if (settings.imageFilePath) {
-        imageInput.value = settings.imageFilePath;
-        // updateImage(settings.imageFilePath);
-    }
+function initState() {
+    const uiState = storeModule.getSettings().uiState;
+    updateOpacity(uiState.opacity);
+    updateImage(uiState.imgPath, () => {
+        setScroll(uiState.scrollData);
+    });
 }
 function initWindowMove() {
     const setWindowPosition = remote.getGlobal('setWindowPosition');
@@ -153,15 +149,18 @@ function initWindowMove() {
         }
     });
 }
-function initMainProcessFunctions() {
-    // @ts-ignore
-    window.getScrollPosition = () => {
-        return { top: imgContainer.scrollTop, left: imgContainer.scrollLeft };
-    };
-    // @ts-ignore
-    window.setScroll = (scrollData) => {
-        imgContainer.scrollTop = scrollData.top;
-        imgContainer.scrollLeft = scrollData.left;
+function setScroll(scrollData) {
+    imgContainer.scrollTop = scrollData.top;
+    imgContainer.scrollLeft = scrollData.left;
+}
+function getMemento() {
+    return {
+        scrollData: {
+            top: imgContainer.scrollTop,
+            left: imgContainer.scrollLeft,
+        },
+        imgPath: image.src,
+        opacity: image.style.opacity,
     };
 }
 //# sourceMappingURL=script.js.map

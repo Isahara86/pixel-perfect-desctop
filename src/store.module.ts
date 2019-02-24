@@ -3,14 +3,13 @@ import * as fse from 'fs-extra';
 import * as path from "path";
 import SettingsModuleLike = PixelPerfectDesktop.StoreModuleLike;
 import Rectangle = Electron.Rectangle;
+import {settings} from "cluster";
 
 class StoreModule implements SettingsModuleLike {
 
     private _settings: ISettings;
     private readonly _dataFilePath: string;
     public readonly isProd: boolean;
-
-    private _subscribers: any[] = [];
 
     constructor() {
         this.isProd = __dirname.includes('resources');
@@ -27,57 +26,41 @@ class StoreModule implements SettingsModuleLike {
     private _loadSettings(): ISettings {
         try {
             return fse.readJsonSync(this._dataFilePath)
-
         } catch (e) {
+            console.log(e);
             return {
-                opacity: 0.7,
-                imageFilePath: 'no-file.jpeg',
-                // @ts-ignore
-                windowBounds: null,
-                // @ts-ignore
-                scrollData: null,
+                windowBounds: {
+                    height: 800,
+                    width: 600,
+                    x: 0,
+                    y: 0,
+                },
+                uiState: {
+                    imgPath: 'no-file.jpeg',
+                    opacity: 0.7,
+                    scrollData: {
+                        left: 0,
+                        top: 0,
+                    },
+                },
             }
         }
-    }
-
-    public subscribe(cb: (settings: ISettings) => void): () => void {
-        this._subscribers.push(cb);
-
-        return () => {
-            this._subscribers = this._subscribers.filter(sub => sub !== cb)
-        }
-
-    }
-
-    public setImagePath(newPath: string): void {
-        // @ts-ignore
-        this._settings.imageFilePath = newPath;
-        this.saveAndNotify();
-    }
-
-    public setOpacity(opacity: number): void {
-        // @ts-ignore
-        this._settings.opacity = opacity;
-        this.saveAndNotify();
-    }
-
-    saveAndNotify() {
-        this._subscribers.forEach(cb => cb());
-        fse.outputJson(this._dataFilePath, this._settings, (err) => {
-            if (err) {
-                console.log(err);
-            }
-        });
-
     }
 
     getSettings(): ISettings {
         return this._settings;
     }
 
-    saveWindowState(data: { windowBounds: Rectangle, scrollData: ScrollData }): void {
-        this._settings = {...this._settings, ...data};
-        this.saveAndNotify();
+    setSettings(settings: ISettings, cb: any): void {
+        this._settings = settings;
+
+        fse.outputJson(this._dataFilePath, this._settings, (err) => {
+            if (err) {
+                console.log(err);
+            } else {
+                cb();
+            }
+        });
     }
 }
 

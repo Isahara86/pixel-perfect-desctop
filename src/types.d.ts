@@ -19,26 +19,28 @@ declare namespace PixelPerfectDesktop {
     }
 
     interface CloseFunc {
-        (): void;
+        (uiState: UIState): void;
     }
 
     interface ISettings {
-        readonly opacity: number;
-        readonly imageFilePath: string;
+        readonly uiState: UIState;
         readonly windowBounds: Rectangle;
-        readonly scrollData: ScrollData;
     }
 
     interface StoreModuleLike {
-        subscribe: (cb: (settings: ISettings) => void) => () => void;
-        setOpacity: (opacity: number) => void;
-        setImagePath: (newPath: string) => void;
         getSettings: () => ISettings;
+        setSettings: (settings: ISettings, cb: () => void) => void;
     }
 
     interface ScrollData {
         top: number;
         left: number;
+    }
+
+    interface UIState {
+        scrollData: ScrollData;
+        imgPath: string;
+        opacity: number;
     }
 
 }

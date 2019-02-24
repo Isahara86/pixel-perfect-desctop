@@ -1,9 +1,9 @@
 import SetWindowPosition = PixelPerfectDesktop.SetWindowPosition;
 import MinimizeFunc = PixelPerfectDesktop.MinimizeFunc;
 import CloseFunc = PixelPerfectDesktop.CloseFunc;
-import ISettings = PixelPerfectDesktop.ISettings;
 import StoreModuleLike = PixelPerfectDesktop.StoreModuleLike;
 import ScrollData = PixelPerfectDesktop.ScrollData;
+import UIState = PixelPerfectDesktop.UIState;
 
 const {remote} = (<any>window).require('electron');
 
@@ -15,17 +15,15 @@ const sliderPicker = document.getElementById('sliderPicker')!;
 const slider = document.getElementById('slider')!;
 let isChoseImageHidden = false;
 
-
 init();
 
 function init() {
-    initMainProcessFunctions();
     initWindowMove();
     initMinimizeCloseButtons();
     initOpacitySlider();
     initImageChoseBtn();
     // Must be called the latest
-    initWindowState();
+    initState();
 }
 
 function initImageChoseBtn() {
@@ -33,7 +31,6 @@ function initImageChoseBtn() {
 
     imageInput.onchange = (event: any) => {
         const imgPath = event.target.files[0].path;
-        storeModule.setImagePath(imgPath);
         updateImage(imgPath);
     };
 }
@@ -59,9 +56,7 @@ function initOpacitySlider() {
     };
 
     document.onmousemove = function (e: MouseEvent) {
-
         if (isSliderActive) {
-            const pickerSize = sliderPicker.getBoundingClientRect().width;
             const sliderSize = slider.getBoundingClientRect().width;
 
             let opacity = (e.clientX - slider.getBoundingClientRect().left) / sliderSize;
@@ -74,26 +69,28 @@ function initOpacitySlider() {
                 opacity = 0;
             }
 
-            updateOpacity(opacity, sliderSize, pickerSize);
+            updateOpacity(opacity);
 
             if (saveTimeoutID) {
                 clearTimeout(saveTimeoutID);
                 saveTimeoutID = null;
             }
             saveTimeoutID = setTimeout(() => {
-                storeModule.setOpacity(opacity);
             }, 1000);
         }
     };
 }
 
-function updateOpacity(opacity: number, sliderSize: number, pickerSize: number) {
+function updateOpacity(opacity: number) {
+    const pickerSize = sliderPicker.getBoundingClientRect().width;
+    const sliderSize = slider.getBoundingClientRect().width;
+
     sliderPicker.style.left = Math.round(sliderSize * opacity - pickerSize / 2) + 'px';
     image.style.opacity = opacity;
 }
 
 
-function updateImage(imgPath: string) {
+function updateImage(imgPath: string, callBack?: any) {
     if (!isChoseImageHidden) {
         const choseImageText = document.getElementById('choseImageText')!;
 
@@ -106,6 +103,8 @@ function updateImage(imgPath: string) {
     image.onload = function () {
         image.width = image.naturalWidth;
         image.height = image.naturalHeight;
+
+        callBack && callBack();
     }
 }
 
@@ -121,20 +120,17 @@ function initMinimizeCloseButtons() {
     };
 
     closeBtn.onclick = () => {
-        closeWindow();
+        closeWindow(getMemento());
     };
 }
 
-function initWindowState() {
-    const settings: ISettings = storeModule.getSettings();
+function initState() {
+    const uiState: UIState = storeModule.getSettings().uiState;
 
-    const pickerSize = sliderPicker.getBoundingClientRect().width;
-    const sliderSize = slider.getBoundingClientRect().width;
-
-    updateOpacity(settings.opacity, sliderSize, pickerSize);
-    if (settings.imageFilePath) {
-        updateImage(settings.imageFilePath);
-    }
+    updateOpacity(uiState.opacity);
+    updateImage(uiState.imgPath, () => {
+        setScroll(uiState.scrollData);
+    });
 }
 
 function initWindowMove() {
@@ -203,16 +199,18 @@ function initWindowMove() {
     });
 }
 
-function initMainProcessFunctions() {
-    // @ts-ignore
-    window.getScrollPosition = (): ScrollData => {
-        return {top: imgContainer.scrollTop, left: imgContainer.scrollLeft}
-    };
-
-    // @ts-ignore
-    window.setScroll = (scrollData: ScrollData) => {
-        imgContainer.scrollTop = scrollData.top;
-        imgContainer.scrollLeft = scrollData.left;
-    }
+function setScroll(scrollData: ScrollData): void {
+    imgContainer.scrollTop = scrollData.top;
+    imgContainer.scrollLeft = scrollData.left;
 }
 
+function getMemento(): UIState {
+    return {
+        scrollData: {
+            top: imgContainer.scrollTop,
+            left: imgContainer.scrollLeft,
+        },
+        imgPath: image.src,
+        opacity: image.style.opacity,
+    }
+}

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const store_module_1 = __importDefault(require("./store.module"));
+const electron_1 = require("electron");
 const globalObj = global;
 let window;
 function setWindowPosition(x, y) {
@@ -11,39 +12,46 @@ function setWindowPosition(x, y) {
     window.setPosition(curPos[0] + x, curPos[1] + y);
 }
 function minimize() {
-    const window = globalObj.window;
     window.minimize();
 }
-function close() {
-    saveState()
-        .then(() => globalObj.window.close());
+function close(uiState) {
+    saveState(uiState, () => window.close());
 }
-function saveState() {
-    const bounds = window.getBounds();
-    return window.webContents
-        .executeJavaScript('getScrollPosition();')
-        .then((scrollData) => {
-        store_module_1.default.saveWindowState({ windowBounds: bounds, scrollData });
+function saveState(uiState, cb) {
+    const windowBounds = window.getBounds();
+    store_module_1.default.setSettings({ windowBounds, uiState }, cb);
+}
+function createWindow() {
+    const windowBounds = store_module_1.default.getSettings().windowBounds;
+    const window = new electron_1.BrowserWindow({
+        alwaysOnTop: true,
+        frame: false,
+        transparent: true,
+        minHeight: 500,
+        minWidth: 500,
+        show: false,
+        width: windowBounds.width,
+        height: windowBounds.height,
+        x: windowBounds.x,
+        y: windowBounds.y,
+        webPreferences: {
+            nodeIntegration: true,
+        }
     });
+    window.loadURL(`file://${__dirname}/UI/index.html`);
+    window.on("closed", () => {
+        process.exit();
+    });
+    return window;
 }
-function loadWindowState() {
-    const settings = store_module_1.default.getSettings();
-    if (settings.windowBounds) {
-        window.setBounds(settings.windowBounds);
-    }
-    if (settings.scrollData) {
-        window.webContents.executeJavaScript(`setScroll(${JSON.stringify(settings.scrollData)});`);
-    }
-}
-function init(newWindow) {
+function init() {
+    window = createWindow();
+    globalObj.window = window;
     globalObj.setWindowPosition = setWindowPosition;
     globalObj.minimize = minimize;
     globalObj.close = close;
     globalObj.storeModule = store_module_1.default;
-    globalObj.window = newWindow;
-    window = newWindow;
-    window.webContents.on('did-finish-load', () => {
-        loadWindowState();
+    window.webContents.once('did-finish-load', () => {
         window.show();
         if (!store_module_1.default.isProd) {
             window.webContents.openDevTools();

@@ -1,60 +1,67 @@
 import AppGlobal = PixelPerfectDesktop.AppGlobal;
 import storeModule from './store.module';
-import BrowserWindow = Electron.BrowserWindow;
+import {BrowserWindow} from 'electron';
 
 const globalObj: AppGlobal = <any>global;
 let window: BrowserWindow;
 
 function setWindowPosition(x: number, y: number) {
     const curPos = window.getPosition();
-
     window.setPosition(curPos[0] + x, curPos[1] + y);
 }
 
 function minimize() {
-    const window = globalObj.window;
     window.minimize();
 }
 
-function close() {
-    saveState()
-        .then(() => globalObj.window.close());
+function close(uiState: UIState) {
+    saveState(uiState, () => window.close());
 }
 
-function saveState(): Promise<void> {
-    const bounds = window.getBounds();
-
-    return window.webContents
-        .executeJavaScript('getScrollPosition();')
-        .then((scrollData: ScrollData) => {
-            storeModule.saveWindowState({windowBounds: bounds, scrollData});
-        });
+function saveState(uiState: UIState, cb: any) {
+    const windowBounds = window.getBounds();
+    storeModule.setSettings({windowBounds, uiState}, cb);
 }
 
-function loadWindowState() {
-    const settings = storeModule.getSettings();
+function createWindow(): BrowserWindow {
+    const windowBounds = storeModule.getSettings().windowBounds;
 
-    if (settings.windowBounds) {
-        window.setBounds(settings.windowBounds);
-    }
+    const window = new BrowserWindow({
+        alwaysOnTop: true,
+        frame: false,
+        transparent: true,
+        minHeight: 500,
+        minWidth: 500,
+        show: false,
+        width: windowBounds.width,
+        height: windowBounds.height,
+        x: windowBounds.x,
+        y: windowBounds.y,
+        webPreferences: {
+            nodeIntegration: true,
+        }
+    });
 
-    if (settings.scrollData) {
-        window.webContents.executeJavaScript(`setScroll(${JSON.stringify(settings.scrollData)});`)
-    }
+    window.loadURL(`file://${__dirname}/UI/index.html`);
+
+    window.on("closed", () => {
+        process.exit();
+    });
+
+    return window
 }
 
-export function init(newWindow: BrowserWindow) {
+export function init() {
+    window = createWindow();
+    globalObj.window = window;
     globalObj.setWindowPosition = setWindowPosition;
     globalObj.minimize = minimize;
     globalObj.close = close;
     globalObj.storeModule = storeModule;
-    globalObj.window = newWindow;
 
-    window = newWindow;
-
-    window.webContents.on('did-finish-load', () => {
-        loadWindowState();
+    window.webContents.once('did-finish-load', () => {
         window.show();
+
         if (!storeModule.isProd) {
             window.webContents.openDevTools();
         }
