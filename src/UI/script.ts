@@ -7,14 +7,11 @@ import ScrollData = PixelPerfectDesktop.ScrollData;
 
 const {remote} = (<any>window).require('electron');
 
-const setWindowPosition: SetWindowPosition = remote.getGlobal('setWindowPosition');
 const storeModule: StoreModuleLike = remote.getGlobal('storeModule');
 
-const imageInput = document.getElementById('imgInput')!;
 const image = <any>document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer')!;
 
-let isChoseImageHidden = false;
 
 init();
 
@@ -24,13 +21,19 @@ function init() {
     initWindowState();
     initMinimizeCloseButtons();
     initOpacitySlider();
+    initImageChoseBtn();
 }
 
-imageInput.onchange = (event: any) => {
-    const imgPath = event.target.files[0].path;
-    storeModule.setImagePath(imgPath);
-    updateImage(imgPath);
-};
+function initImageChoseBtn() {
+    const imageInput = document.getElementById('imgInput')!;
+
+    imageInput.onchange = (event: any) => {
+        const imgPath = event.target.files[0].path;
+        storeModule.setImagePath(imgPath);
+        updateImage(imgPath);
+    };
+}
+
 
 function initOpacitySlider() {
     const sliderPicker = document.getElementById('sliderPicker')!;
@@ -90,6 +93,8 @@ function updateOpacity(opacity: number, sliderSize: number, pickerSize: number) 
 }
 
 function updateImage(imgPath: string) {
+    let isChoseImageHidden = false;
+
     if (!isChoseImageHidden) {
         // @ts-ignore
         document.getElementById('choseImageText').style.display = 'none';
@@ -135,6 +140,7 @@ function initWindowState() {
 }
 
 function initWindowMove() {
+    const setWindowPosition: SetWindowPosition = remote.getGlobal('setWindowPosition');
     const moveBtn = <any>document.getElementById('moveBtn');
 
     let isDown = false;

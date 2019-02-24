@@ -1,11 +1,8 @@
 "use strict";
 const { remote } = window.require('electron');
-const setWindowPosition = remote.getGlobal('setWindowPosition');
 const storeModule = remote.getGlobal('storeModule');
-const imageInput = document.getElementById('imgInput');
 const image = document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer');
-let isChoseImageHidden = false;
 init();
 function init() {
     initMainProcessFunctions();
@@ -13,12 +10,16 @@ function init() {
     initWindowState();
     initMinimizeCloseButtons();
     initOpacitySlider();
+    initImageChoseBtn();
 }
-imageInput.onchange = (event) => {
-    const imgPath = event.target.files[0].path;
-    storeModule.setImagePath(imgPath);
-    updateImage(imgPath);
-};
+function initImageChoseBtn() {
+    const imageInput = document.getElementById('imgInput');
+    imageInput.onchange = (event) => {
+        const imgPath = event.target.files[0].path;
+        storeModule.setImagePath(imgPath);
+        updateImage(imgPath);
+    };
+}
 function initOpacitySlider() {
     const sliderPicker = document.getElementById('sliderPicker');
     const slider = document.getElementById('slider');
@@ -64,6 +65,7 @@ function updateOpacity(opacity, sliderSize, pickerSize) {
     image.style.opacity = opacity;
 }
 function updateImage(imgPath) {
+    let isChoseImageHidden = false;
     if (!isChoseImageHidden) {
         // @ts-ignore
         document.getElementById('choseImageText').style.display = 'none';
@@ -99,6 +101,7 @@ function initWindowState() {
     }
 }
 function initWindowMove() {
+    const setWindowPosition = remote.getGlobal('setWindowPosition');
     const moveBtn = document.getElementById('moveBtn');
     let isDown = false;
     let mousePosition;
