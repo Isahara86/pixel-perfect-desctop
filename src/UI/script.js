@@ -142,6 +142,17 @@ function initWindowMove() {
                 break;
         }
     });
+    // prevent arrow scrolling
+    window.addEventListener("keydown", function (e) {
+        switch (e.code) {
+            case 'ArrowUp':
+            case 'ArrowDown':
+            case 'ArrowLeft':
+            case 'ArrowRight':
+                e.preventDefault();
+                break;
+        }
+    }, false);
 }
 function setScroll(scrollData) {
     imgContainer.scrollTop = scrollData.top;

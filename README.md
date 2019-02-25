@@ -24,6 +24,7 @@ nodeJS v10.x
 13. Remove ts-ignore (DONE)
 
 14. Test before fix version
+  14.1 Fix scroll bug when image focused(FIXED)
 
 
 
