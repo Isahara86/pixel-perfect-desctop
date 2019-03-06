@@ -6,19 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const store_module_1 = __importDefault(require("./store.module"));
 const electron_1 = require("electron");
 const globalObj = global;
-let window;
+let browserWindow;
 function setWindowPosition(x, y) {
-    const curPos = window.getPosition();
-    window.setPosition(curPos[0] + x, curPos[1] + y);
+    const curPos = browserWindow.getPosition();
+    browserWindow.setPosition(curPos[0] + x, curPos[1] + y);
 }
 function minimize() {
-    window.minimize();
+    browserWindow.minimize();
 }
 function close(uiState) {
-    saveState(uiState, () => window.close());
+    saveState(uiState, () => browserWindow.close());
 }
 function saveState(uiState, cb) {
-    const windowBounds = window.getBounds();
+    const windowBounds = browserWindow.getBounds();
     store_module_1.default.setSettings({ windowBounds, uiState }, cb);
 }
 function createWindow() {
@@ -45,16 +45,17 @@ function createWindow() {
     return window;
 }
 function init() {
-    window = createWindow();
-    globalObj.window = window;
-    globalObj.setWindowPosition = setWindowPosition;
-    globalObj.minimize = minimize;
-    globalObj.close = close;
-    globalObj.storeModule = store_module_1.default;
-    window.webContents.once('did-finish-load', () => {
-        window.show();
+    browserWindow = createWindow();
+    globalObj.managerGlobal = {
+        setWindowPosition,
+        minimize,
+        close,
+        storeModule: store_module_1.default,
+    };
+    browserWindow.webContents.once('did-finish-load', () => {
+        browserWindow.show();
         if (!store_module_1.default.isProd) {
-            window.webContents.openDevTools();
+            browserWindow.webContents.openDevTools();
         }
     });
 }

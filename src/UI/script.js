@@ -1,11 +1,9 @@
 "use strict";
-const { remote } = window.require('electron');
-const storeModule = remote.getGlobal('storeModule');
+const managerGlobal = window.require('electron').remote.getGlobal('managerGlobal');
 const image = document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer');
 const sliderPicker = document.getElementById('sliderPicker');
 const slider = document.getElementById('slider');
-const imageInput = document.getElementById('imgInput');
 let isChoseImageHidden = false;
 init();
 function init() {
@@ -17,6 +15,7 @@ function init() {
     setMemento();
 }
 function initImageChoseBtn() {
+    const imageInput = document.getElementById('imgInput');
     imageInput.onchange = (event) => {
         const imgPath = event.target.files[0].path;
         updateImage(imgPath);
@@ -76,19 +75,16 @@ function updateImage(imgPath, callBack) {
     };
 }
 function initMinimizeCloseButtons() {
-    const minimize = remote.getGlobal('minimize');
-    const closeWindow = remote.getGlobal('close');
     const minimizeBtn = document.getElementById('minimizeBtn');
     const closeBtn = document.getElementById('closeBtn');
     minimizeBtn.onclick = () => {
-        minimize();
+        managerGlobal.minimize();
     };
     closeBtn.onclick = () => {
-        closeWindow(getMemento());
+        managerGlobal.close(getMemento());
     };
 }
 function initWindowMove() {
-    const setWindowPosition = remote.getGlobal('setWindowPosition');
     const moveBtn = document.getElementById('moveBtn');
     let isDown = false;
     let mousePosition;
@@ -116,7 +112,7 @@ function initWindowMove() {
             x: e.clientX,
             y: e.clientY
         };
-        setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
+        managerGlobal.setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
     });
     function setUIRestore() {
         moveBtn.style.cursor = '-webkit-grabbing';
@@ -129,16 +125,16 @@ function initWindowMove() {
     document.addEventListener('keydown', (e) => {
         switch (e.code) {
             case 'ArrowUp':
-                setWindowPosition(0, -1);
+                managerGlobal.setWindowPosition(0, -1);
                 break;
             case 'ArrowDown':
-                setWindowPosition(0, 1);
+                managerGlobal.setWindowPosition(0, 1);
                 break;
             case 'ArrowLeft':
-                setWindowPosition(-1, 0);
+                managerGlobal.setWindowPosition(-1, 0);
                 break;
             case 'ArrowRight':
-                setWindowPosition(1, 0);
+                managerGlobal.setWindowPosition(1, 0);
                 break;
         }
     });
@@ -159,7 +155,7 @@ function setScroll(scrollData) {
     imgContainer.scrollLeft = scrollData.left;
 }
 function setMemento() {
-    const uiState = storeModule.getSettings().uiState;
+    const uiState = managerGlobal.storeModule.getSettings().uiState;
     updateOpacity(uiState.opacity);
     updateImage(uiState.imgPath, () => {
         setScroll(uiState.scrollData);

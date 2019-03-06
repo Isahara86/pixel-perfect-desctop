@@ -2,8 +2,6 @@ import ISettings = PixelPerfectDesktop.ISettings;
 import * as fse from 'fs-extra';
 import * as path from "path";
 import SettingsModuleLike = PixelPerfectDesktop.StoreModuleLike;
-import Rectangle = Electron.Rectangle;
-import {settings} from "cluster";
 
 class StoreModule implements SettingsModuleLike {
 

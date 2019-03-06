@@ -1,19 +1,13 @@
-import SetWindowPosition = PixelPerfectDesktop.SetWindowPosition;
-import MinimizeFunc = PixelPerfectDesktop.MinimizeFunc;
-import CloseFunc = PixelPerfectDesktop.CloseFunc;
-import StoreModuleLike = PixelPerfectDesktop.StoreModuleLike;
 import ScrollData = PixelPerfectDesktop.ScrollData;
 import UIState = PixelPerfectDesktop.UIState;
+import ManagerGlobal = PixelPerfectDesktop.ManagerGlobal;
 
-const {remote} = (<any>window).require('electron');
-
-const storeModule: StoreModuleLike = remote.getGlobal('storeModule');
+const managerGlobal: ManagerGlobal = (<any>window).require('electron').remote.getGlobal('managerGlobal');
 
 const image = <any>document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer')!;
 const sliderPicker = document.getElementById('sliderPicker')!;
 const slider = document.getElementById('slider')!;
-const imageInput = <HTMLInputElement>document.getElementById('imgInput')!;
 
 let isChoseImageHidden = false;
 
@@ -29,6 +23,8 @@ function init() {
 }
 
 function initImageChoseBtn() {
+    const imageInput = <HTMLInputElement>document.getElementById('imgInput')!;
+
     imageInput.onchange = (event: any) => {
         const imgPath = event.target.files[0].path;
         updateImage(imgPath);
@@ -37,7 +33,6 @@ function initImageChoseBtn() {
 
 
 function initOpacitySlider() {
-
     let isSliderActive = false;
     let saveTimeoutID: any;
 
@@ -107,23 +102,19 @@ function updateImage(imgPath: string, callBack?: any) {
 }
 
 function initMinimizeCloseButtons() {
-    const minimize: MinimizeFunc = remote.getGlobal('minimize');
-    const closeWindow: CloseFunc = remote.getGlobal('close');
-
     const minimizeBtn: HTMLElement = document.getElementById('minimizeBtn')!;
     const closeBtn: HTMLElement = document.getElementById('closeBtn')!;
 
     minimizeBtn.onclick = () => {
-        minimize();
+        managerGlobal.minimize();
     };
 
     closeBtn.onclick = () => {
-        closeWindow(getMemento());
+        managerGlobal.close(getMemento());
     };
 }
 
 function initWindowMove() {
-    const setWindowPosition: SetWindowPosition = remote.getGlobal('setWindowPosition');
     const moveBtn = <any>document.getElementById('moveBtn');
 
     let isDown = false;
@@ -159,7 +150,7 @@ function initWindowMove() {
 
         };
 
-        setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
+        managerGlobal.setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
     });
 
     function setUIRestore() {
@@ -175,22 +166,22 @@ function initWindowMove() {
     document.addEventListener('keydown', (e: KeyboardEvent) => {
         switch (e.code) {
             case 'ArrowUp':
-                setWindowPosition(0, -1);
+                managerGlobal.setWindowPosition(0, -1);
                 break;
             case 'ArrowDown':
-                setWindowPosition(0, 1);
+                managerGlobal.setWindowPosition(0, 1);
                 break;
             case 'ArrowLeft':
-                setWindowPosition(-1, 0);
+                managerGlobal.setWindowPosition(-1, 0);
                 break;
             case 'ArrowRight':
-                setWindowPosition(1, 0);
+                managerGlobal.setWindowPosition(1, 0);
                 break;
         }
     });
 
     // prevent arrow scrolling
-    window.addEventListener("keydown", function(e) {
+    window.addEventListener("keydown", function (e) {
         switch (e.code) {
             case 'ArrowUp':
             case 'ArrowDown':
@@ -208,7 +199,7 @@ function setScroll(scrollData: ScrollData): void {
 }
 
 function setMemento() {
-    const uiState: UIState = storeModule.getSettings().uiState;
+    const uiState: UIState = managerGlobal.storeModule.getSettings().uiState;
 
     updateOpacity(uiState.opacity);
     updateImage(uiState.imgPath, () => {

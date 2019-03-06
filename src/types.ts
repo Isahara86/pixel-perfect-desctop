@@ -1,12 +1,14 @@
 declare namespace PixelPerfectDesktop {
-    import BrowserWindow = Electron.BrowserWindow;
     import Rectangle = Electron.Rectangle;
 
-    interface AppGlobal {
+    interface AppGlobal extends NodeJS.Global {
+        managerGlobal: ManagerGlobal;
+    }
+
+    interface ManagerGlobal {
         setWindowPosition: SetWindowPosition;
         minimize: MinimizeFunc;
         close: CloseFunc;
-        window: BrowserWindow;
         storeModule: StoreModuleLike;
     }
 

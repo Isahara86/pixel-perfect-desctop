@@ -3,23 +3,23 @@ import storeModule from './store.module';
 import {BrowserWindow} from 'electron';
 
 const globalObj: AppGlobal = <any>global;
-let window: BrowserWindow;
+let browserWindow: BrowserWindow;
 
 function setWindowPosition(x: number, y: number) {
-    const curPos = window.getPosition();
-    window.setPosition(curPos[0] + x, curPos[1] + y);
+    const curPos = browserWindow.getPosition();
+    browserWindow.setPosition(curPos[0] + x, curPos[1] + y);
 }
 
 function minimize() {
-    window.minimize();
+    browserWindow.minimize();
 }
 
 function close(uiState: UIState) {
-    saveState(uiState, () => window.close());
+    saveState(uiState, () => browserWindow.close());
 }
 
 function saveState(uiState: UIState, cb: any) {
-    const windowBounds = window.getBounds();
+    const windowBounds = browserWindow.getBounds();
     storeModule.setSettings({windowBounds, uiState}, cb);
 }
 
@@ -52,18 +52,21 @@ function createWindow(): BrowserWindow {
 }
 
 export function init() {
-    window = createWindow();
-    globalObj.window = window;
-    globalObj.setWindowPosition = setWindowPosition;
-    globalObj.minimize = minimize;
-    globalObj.close = close;
-    globalObj.storeModule = storeModule;
+    browserWindow = createWindow();
 
-    window.webContents.once('did-finish-load', () => {
-        window.show();
+    globalObj.managerGlobal = {
+        setWindowPosition,
+        minimize,
+        close,
+        storeModule,
+    };
+
+
+    browserWindow.webContents.once('did-finish-load', () => {
+        browserWindow.show();
 
         if (!storeModule.isProd) {
-            window.webContents.openDevTools();
+            browserWindow.webContents.openDevTools();
         }
     });
 }
