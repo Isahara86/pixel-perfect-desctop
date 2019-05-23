@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run build & electron .",
+    "start": "npm run build && electron .",
     "build-installer": "npm run build && electron-builder",
     "build": "tsc & npm run sass",
     "sass": "node-sass ./src -o ./src --source-map true"

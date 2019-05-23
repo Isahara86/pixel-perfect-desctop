@@ -7,18 +7,25 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const electron_1 = require("electron");
 const fse = __importStar(require("fs-extra"));
 const path = __importStar(require("path"));
 class StoreModule {
     constructor() {
-        this.isProd = __dirname.includes('resources');
+        this.isProd = __dirname.toLocaleLowerCase().includes('resources');
+        this._dataFilePath = this._getDataPath();
+        this._settings = this._loadSettings();
+    }
+    _getDataPath() {
+        if (process.platform === 'darwin') {
+            return path.join(electron_1.app.getPath('userData'), './data.json');
+        }
         if (this.isProd) {
-            this._dataFilePath = path.join(__dirname, '../../data.json');
+            return path.join(__dirname, '../../data.json');
         }
         else {
-            this._dataFilePath = path.join(__dirname, './data.json');
+            return path.join(__dirname, './data.json');
         }
-        this._settings = this._loadSettings();
     }
     _loadSettings() {
         try {
