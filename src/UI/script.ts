@@ -115,12 +115,16 @@ function initMinimizeCloseButtons() {
 }
 
 function initWindowMove() {
-    const moveBtn = <any>document.getElementById('moveBtn');
+    const moveArea = <any>document.getElementById('toolbar');
 
     let isDown = false;
     let mousePosition: { x: number, y: number };
 
-    moveBtn.addEventListener('mousedown', (evt: any) => {
+    moveArea.addEventListener('mousedown', (evt: any) => {
+        if (evt.target !== moveArea) {
+            return;
+        }
+
         isDown = true;
         setUIRestore();
         mousePosition = {
@@ -129,7 +133,7 @@ function initWindowMove() {
         };
     }, true);
 
-    moveBtn.ondragstart = function () {
+    moveArea.ondragstart = function () {
         return false;
     };
 
@@ -154,12 +158,12 @@ function initWindowMove() {
     });
 
     function setUIRestore() {
-        moveBtn.style.cursor = '-webkit-grabbing';
+        moveArea.style.cursor = '-webkit-grabbing';
         imgContainer.style.overflow = 'hidden';
     }
 
     function setUIMoving() {
-        moveBtn.style.cursor = '';
+        moveArea.style.cursor = '';
         imgContainer.style.overflow = '';
     }
 

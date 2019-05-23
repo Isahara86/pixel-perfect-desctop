@@ -85,10 +85,13 @@ function initMinimizeCloseButtons() {
     };
 }
 function initWindowMove() {
-    const moveBtn = document.getElementById('moveBtn');
+    const moveArea = document.getElementById('toolbar');
     let isDown = false;
     let mousePosition;
-    moveBtn.addEventListener('mousedown', (evt) => {
+    moveArea.addEventListener('mousedown', (evt) => {
+        if (evt.target !== moveArea) {
+            return;
+        }
         isDown = true;
         setUIRestore();
         mousePosition = {
@@ -96,7 +99,7 @@ function initWindowMove() {
             y: evt.clientY
         };
     }, true);
-    moveBtn.ondragstart = function () {
+    moveArea.ondragstart = function () {
         return false;
     };
     document.addEventListener('mouseup', () => {
@@ -115,11 +118,11 @@ function initWindowMove() {
         managerGlobal.setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
     });
     function setUIRestore() {
-        moveBtn.style.cursor = '-webkit-grabbing';
+        moveArea.style.cursor = '-webkit-grabbing';
         imgContainer.style.overflow = 'hidden';
     }
     function setUIMoving() {
-        moveBtn.style.cursor = '';
+        moveArea.style.cursor = '';
         imgContainer.style.overflow = '';
     }
     document.addEventListener('keydown', (e) => {

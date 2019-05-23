@@ -13,19 +13,6 @@ body{
   user-select: none;
 }
 
-.move-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 3px;
-  background-image: url('img/move-arrows.png');
-  background-size: contain;
-  cursor: -webkit-grab;
-
-  &:hover {
-    background-color: #ffffff;
-  }
-}
-
 .image-input {
   position: relative;
 
