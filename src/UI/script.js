@@ -4,10 +4,12 @@ const image = document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer');
 const sliderPicker = document.getElementById('sliderPicker');
 const slider = document.getElementById('slider');
+const delayPromise = (sec) => new Promise(resolve => setTimeout(resolve, sec));
 let isChoseImageHidden = false;
 init();
 function init() {
-    initWindowMove();
+    initMouseEvents();
+    initKeyboardEvents();
     initMinimizeCloseButtons();
     initOpacitySlider();
     initImageChoseBtn();
@@ -84,7 +86,7 @@ function initMinimizeCloseButtons() {
         managerGlobal.close(getMemento());
     };
 }
-function initWindowMove() {
+function initMouseEvents() {
     const moveArea = document.getElementById('toolbar');
     let isDown = false;
     let mousePosition;
@@ -125,24 +127,31 @@ function initWindowMove() {
         moveArea.style.cursor = '';
         imgContainer.style.overflow = '';
     }
+}
+function initKeyboardEvents() {
+    let draggedKeyCode = '';
+    let moveIntervalId;
     document.addEventListener('keydown', (e) => {
+        if (draggedKeyCode) {
+            return;
+        }
         switch (e.code) {
             case 'ArrowUp':
-                managerGlobal.setWindowPosition(0, -1);
+                setMoveInterval(0, -1, e.code);
                 break;
             case 'ArrowDown':
-                managerGlobal.setWindowPosition(0, 1);
+                setMoveInterval(0, 1, e.code);
                 break;
             case 'ArrowLeft':
-                managerGlobal.setWindowPosition(-1, 0);
+                setMoveInterval(-1, 0, e.code);
                 break;
             case 'ArrowRight':
-                managerGlobal.setWindowPosition(1, 0);
+                setMoveInterval(1, 0, e.code);
                 break;
         }
     });
     // prevent arrow scrolling
-    window.addEventListener("keydown", function (e) {
+    window.addEventListener('keydown', (e) => {
         switch (e.code) {
             case 'ArrowUp':
             case 'ArrowDown':
@@ -152,6 +161,29 @@ function initWindowMove() {
                 break;
         }
     }, false);
+    document.addEventListener('keyup', (e) => {
+        if (e.code === draggedKeyCode) {
+            draggedKeyCode = '';
+            clearInterval(moveIntervalId);
+        }
+    }, true);
+    async function setMoveInterval(x, y, keycode) {
+        draggedKeyCode = keycode;
+        managerGlobal.setWindowPosition(x, y);
+        setTimeout(() => {
+            x *= 10;
+            y *= 10;
+        }, 1000);
+        x *= 2;
+        y *= 2;
+        await delayPromise(300);
+        if (!draggedKeyCode) {
+            return;
+        }
+        moveIntervalId = setInterval(() => {
+            managerGlobal.setWindowPosition(x, y);
+        }, 60);
+    }
 }
 function setScroll(scrollData) {
     imgContainer.scrollTop = scrollData.top;

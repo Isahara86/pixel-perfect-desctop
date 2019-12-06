@@ -9,12 +9,15 @@ const imgContainer = document.getElementById('imgContainer')!;
 const sliderPicker = document.getElementById('sliderPicker')!;
 const slider = document.getElementById('slider')!;
 
+const delayPromise = (sec: number) => new Promise(resolve => setTimeout(resolve, sec));
+
 let isChoseImageHidden = false;
 
 init();
 
 function init() {
-    initWindowMove();
+    initMouseEvents();
+    initKeyboardEvents();
     initMinimizeCloseButtons();
     initOpacitySlider();
     initImageChoseBtn();
@@ -114,7 +117,7 @@ function initMinimizeCloseButtons() {
     };
 }
 
-function initWindowMove() {
+function initMouseEvents(): void {
     const moveArea = <any>document.getElementById('toolbar');
 
     let isDown = false;
@@ -157,35 +160,47 @@ function initWindowMove() {
         managerGlobal.setWindowPosition(newMousePosition.x - mousePosition.x, newMousePosition.y - mousePosition.y);
     });
 
-    function setUIRestore() {
+    function setUIRestore(): void {
         moveArea.style.cursor = '-webkit-grabbing';
         imgContainer.style.overflow = 'hidden';
     }
 
-    function setUIMoving() {
+    function setUIMoving(): void {
         moveArea.style.cursor = '';
         imgContainer.style.overflow = '';
     }
 
+
+}
+
+function initKeyboardEvents(): void {
+
+    let draggedKeyCode = '';
+    let moveIntervalId: NodeJS.Timeout;
+
     document.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (draggedKeyCode) {
+            return;
+        }
+
         switch (e.code) {
             case 'ArrowUp':
-                managerGlobal.setWindowPosition(0, -1);
+                setMoveInterval(0, -1, e.code);
                 break;
             case 'ArrowDown':
-                managerGlobal.setWindowPosition(0, 1);
+                setMoveInterval(0, 1, e.code);
                 break;
             case 'ArrowLeft':
-                managerGlobal.setWindowPosition(-1, 0);
+                setMoveInterval(-1, 0, e.code);
                 break;
             case 'ArrowRight':
-                managerGlobal.setWindowPosition(1, 0);
+                setMoveInterval(1, 0, e.code);
                 break;
         }
     });
 
     // prevent arrow scrolling
-    window.addEventListener("keydown", function (e) {
+    window.addEventListener('keydown', (e) => {
         switch (e.code) {
             case 'ArrowUp':
             case 'ArrowDown':
@@ -195,7 +210,39 @@ function initWindowMove() {
                 break;
         }
     }, false);
+
+    document.addEventListener('keyup', (e) => {
+        if (e.code === draggedKeyCode) {
+            draggedKeyCode = '';
+            clearInterval(moveIntervalId);
+        }
+    }, true);
+
+    async function setMoveInterval(x: number, y: number, keycode: string): Promise<void> {
+        draggedKeyCode = keycode;
+
+        managerGlobal.setWindowPosition(x, y);
+
+        setTimeout(() => {
+            x *= 10;
+            y *= 10;
+        }, 1000);
+
+        x *= 2;
+        y *= 2;
+
+        await delayPromise(300);
+
+        if (!draggedKeyCode) {
+            return;
+        }
+
+        moveIntervalId = setInterval(() => {
+            managerGlobal.setWindowPosition(x, y);
+        }, 60)
+    }
 }
+
 
 function setScroll(scrollData: ScrollData): void {
     imgContainer.scrollTop = scrollData.top;
