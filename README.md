@@ -1,12 +1,6 @@
 ## Build requirements:
 
-nodeJS v10.x
-
-`npm install -g typescript`
-
-`npm i -g node-sass`
-
-
+nodeJS v12.x
 
 ## **Version 1 features:**
 1. Move window with arrows (DONE)
