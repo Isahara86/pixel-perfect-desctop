@@ -176,6 +176,7 @@ function initMouseEvents(): void {
 function initKeyboardEvents(): void {
 
     let draggedKeyCode = '';
+    let keyEventTimeStamp: number;
     let moveIntervalId: NodeJS.Timeout;
 
     document.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -185,16 +186,16 @@ function initKeyboardEvents(): void {
 
         switch (e.code) {
             case 'ArrowUp':
-                setMoveInterval(0, -1, e.code);
+                setMoveInterval(0, -1, e);
                 break;
             case 'ArrowDown':
-                setMoveInterval(0, 1, e.code);
+                setMoveInterval(0, 1, e);
                 break;
             case 'ArrowLeft':
-                setMoveInterval(-1, 0, e.code);
+                setMoveInterval(-1, 0, e);
                 break;
             case 'ArrowRight':
-                setMoveInterval(1, 0, e.code);
+                setMoveInterval(1, 0, e);
                 break;
         }
     });
@@ -218,8 +219,9 @@ function initKeyboardEvents(): void {
         }
     }, true);
 
-    async function setMoveInterval(x: number, y: number, keycode: string): Promise<void> {
-        draggedKeyCode = keycode;
+    async function setMoveInterval(x: number, y: number, e: KeyboardEvent): Promise<void> {
+        draggedKeyCode = e.code;
+        keyEventTimeStamp = e.timeStamp;
 
         managerGlobal.setWindowPosition(x, y);
 
@@ -232,8 +234,7 @@ function initKeyboardEvents(): void {
         y *= 2;
 
         await delayPromise(300);
-
-        if (!draggedKeyCode) {
+        if (!draggedKeyCode || e.timeStamp !== keyEventTimeStamp) {
             return;
         }
 
