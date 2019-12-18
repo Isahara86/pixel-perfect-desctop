@@ -8,6 +8,7 @@ const delayPromise = (sec) => new Promise(resolve => setTimeout(resolve, sec));
 let isChoseImageHidden = false;
 init();
 function init() {
+    initDropImage();
     initMouseEvents();
     initKeyboardEvents();
     initMinimizeCloseButtons();
@@ -187,15 +188,12 @@ function initKeyboardEvents() {
         }, 60);
     }
 }
-function setScroll(scrollData) {
-    imgContainer.scrollTop = scrollData.top;
-    imgContainer.scrollLeft = scrollData.left;
-}
 function setMemento() {
     const uiState = managerGlobal.storeModule.getSettings().uiState;
     updateOpacity(uiState.opacity);
     updateImage(uiState.imgPath, () => {
-        setScroll(uiState.scrollData);
+        imgContainer.scrollTop = uiState.scrollData.top;
+        imgContainer.scrollLeft = uiState.scrollData.left;
     });
 }
 function getMemento() {
@@ -206,6 +204,24 @@ function getMemento() {
         },
         imgPath: image.src,
         opacity: image.style.opacity,
+    };
+}
+function initDropImage() {
+    const supportedFileTypes = ['jpg', 'jpeg', 'png'];
+    document.ondragover = document.ondrop = (ev) => {
+        ev.preventDefault();
+    };
+    document.body.ondrop = (ev) => {
+        ev.preventDefault();
+        if (!ev.dataTransfer || !ev.dataTransfer.files || !ev.dataTransfer.files[0]) {
+            return;
+        }
+        const imgPath = ev.dataTransfer.files[0].path;
+        const fileType = imgPath.split('.').reverse()[0];
+        console.log(fileType);
+        if (supportedFileTypes.includes(fileType)) {
+            updateImage(imgPath);
+        }
     };
 }
 //# sourceMappingURL=script.js.map

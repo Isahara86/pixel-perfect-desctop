@@ -1,4 +1,3 @@
-import ScrollData = PixelPerfectDesktop.ScrollData;
 import UIState = PixelPerfectDesktop.UIState;
 import ManagerGlobal = PixelPerfectDesktop.ManagerGlobal;
 
@@ -16,6 +15,7 @@ let isChoseImageHidden = false;
 init();
 
 function init() {
+    initDropImage();
     initMouseEvents();
     initKeyboardEvents();
     initMinimizeCloseButtons();
@@ -244,18 +244,13 @@ function initKeyboardEvents(): void {
     }
 }
 
-
-function setScroll(scrollData: ScrollData): void {
-    imgContainer.scrollTop = scrollData.top;
-    imgContainer.scrollLeft = scrollData.left;
-}
-
-function setMemento() {
+function setMemento(): void {
     const uiState: UIState = managerGlobal.storeModule.getSettings().uiState;
 
     updateOpacity(uiState.opacity);
     updateImage(uiState.imgPath, () => {
-        setScroll(uiState.scrollData);
+        imgContainer.scrollTop = uiState.scrollData.top;
+        imgContainer.scrollLeft = uiState.scrollData.left;
     });
 }
 
@@ -268,4 +263,32 @@ function getMemento(): UIState {
         imgPath: image.src,
         opacity: image.style.opacity,
     }
+}
+
+
+function initDropImage(): void {
+
+    const supportedFileTypes = ['jpg', 'jpeg', 'png'];
+
+    document.ondragover = document.ondrop = (ev) => {
+        ev.preventDefault();
+    };
+
+    document.body.ondrop = (ev) => {
+        ev.preventDefault();
+        if (!ev.dataTransfer || !ev.dataTransfer.files || !ev.dataTransfer.files[0]) {
+            return;
+        }
+
+        const imgPath = ev.dataTransfer!.files[0].path;
+
+        const fileType = imgPath.split('.').reverse()[0];
+
+        console.log(fileType);
+
+        if (supportedFileTypes.includes(fileType)) {
+            updateImage(imgPath);
+        }
+    };
+
 }
