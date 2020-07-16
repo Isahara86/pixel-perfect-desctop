@@ -7,6 +7,8 @@ const image = <any>document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer')!;
 const sliderPicker = document.getElementById('sliderPicker')!;
 const slider = document.getElementById('slider')!;
+const widthInput: HTMLInputElement = document.getElementById('width-input')! as HTMLInputElement;
+const heightInput: HTMLInputElement = document.getElementById('height-input')! as HTMLInputElement;
 
 const delayPromise = (sec: number) => new Promise(resolve => setTimeout(resolve, sec));
 
@@ -21,8 +23,32 @@ function init() {
     initMinimizeCloseButtons();
     initOpacitySlider();
     initImageChoseBtn();
+    initImageResize();
     // Must be called the latest
     setMemento();
+}
+
+function initImageResize() {
+    widthInput.oninput = (e: any) => {
+        let newWidth = e.target.value;
+        console.log(newWidth);
+
+        const width = image.naturalWidth;
+        const height = image.naturalHeight;
+        const delta = newWidth / width;
+        let newHeight: number = Math.round(height * delta);
+
+        console.log('width', newWidth, 'height', newHeight);
+
+        newWidth = newWidth < 1 ? 1 : newWidth;
+        newHeight = newHeight < 1 ? 1 : newHeight;
+
+        image.width = newWidth;
+        image.height = newHeight;
+        heightInput.value = newHeight.toString();
+
+
+    }
 }
 
 function initImageChoseBtn() {
@@ -88,7 +114,7 @@ function updateOpacity(opacity: number) {
 }
 
 
-function updateImage(imgPath: string, callBack?: any) {
+function updateImage(imgPath: string, callBack?: () => void) {
     if (!isChoseImageHidden) {
         document.getElementById('choseImageText')!.style.display = 'none';
         isChoseImageHidden = true;
@@ -97,8 +123,14 @@ function updateImage(imgPath: string, callBack?: any) {
     image.src = imgPath;
 
     image.onload = function () {
-        image.width = image.naturalWidth;
-        image.height = image.naturalHeight;
+        const width = image.naturalWidth;
+        const height = image.naturalHeight;
+
+        image.width = width;
+        image.height = height;
+
+        widthInput.value = width;
+        heightInput.value = height;
 
         callBack && callBack();
     }

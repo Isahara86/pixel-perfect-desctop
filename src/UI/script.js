@@ -4,6 +4,8 @@ const image = document.getElementById('image');
 const imgContainer = document.getElementById('imgContainer');
 const sliderPicker = document.getElementById('sliderPicker');
 const slider = document.getElementById('slider');
+const widthInput = document.getElementById('width-input');
+const heightInput = document.getElementById('height-input');
 const delayPromise = (sec) => new Promise(resolve => setTimeout(resolve, sec));
 let isChoseImageHidden = false;
 init();
@@ -14,8 +16,25 @@ function init() {
     initMinimizeCloseButtons();
     initOpacitySlider();
     initImageChoseBtn();
+    initImageResize();
     // Must be called the latest
     setMemento();
+}
+function initImageResize() {
+    widthInput.oninput = (e) => {
+        let newWidth = e.target.value;
+        console.log(newWidth);
+        const width = image.naturalWidth;
+        const height = image.naturalHeight;
+        const delta = newWidth / width;
+        let newHeight = Math.round(height * delta);
+        console.log('width', newWidth, 'height', newHeight);
+        newWidth = newWidth < 1 ? 1 : newWidth;
+        newHeight = newHeight < 1 ? 1 : newHeight;
+        image.width = newWidth;
+        image.height = newHeight;
+        heightInput.value = newHeight.toString();
+    };
 }
 function initImageChoseBtn() {
     const imageInput = document.getElementById('imgInput');
@@ -72,8 +91,12 @@ function updateImage(imgPath, callBack) {
     }
     image.src = imgPath;
     image.onload = function () {
-        image.width = image.naturalWidth;
-        image.height = image.naturalHeight;
+        const width = image.naturalWidth;
+        const height = image.naturalHeight;
+        image.width = width;
+        image.height = height;
+        widthInput.value = width;
+        heightInput.value = height;
         callBack && callBack();
     };
 }
