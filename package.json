@@ -26,6 +26,8 @@
     "files": [
       "!**/*.ts",
       "!**/*.dmg",
+      "!**/dist",
+      "!**/builds",
       "!src/data.json"
     ]
   }
