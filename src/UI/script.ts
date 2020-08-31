@@ -120,6 +120,15 @@ function updateImage(imgPath: string, callBack?: () => void) {
     image.src = imgPath;
 
     image.onload = function () {
+        const width = image.naturalWidth;
+        const height = image.naturalHeight;
+
+        image.width = width;
+        image.height = height;
+
+        widthInput.value = width;
+        heightInput.value = height;
+
         callBack && callBack();
     }
 }
@@ -267,17 +276,21 @@ function initKeyboardEvents(): void {
 function setMemento(): void {
     const uiState: UIState = managerGlobal.storeModule.getSettings().uiState;
 
+    console.log(uiState);
+
 
     updateOpacity(uiState.opacity);
     updateImage(uiState.imgPath, () => {
-        const width = image.naturalWidth;
-        const height = image.naturalHeight;
+        if (uiState.imgWidth && uiState.imgHeight) {
+            const width = uiState.imgWidth;
+            const height = uiState.imgHeight;
 
-        image.width = width;
-        image.height = height;
+            image.width = width;
+            image.height = height;
 
-        widthInput.value = width;
-        heightInput.value = height;
+            widthInput.value = width.toString();
+            heightInput.value = height.toString();
+        }
 
         imgContainer.scrollTop = uiState.scrollData.top;
         imgContainer.scrollLeft = uiState.scrollData.left;
@@ -292,6 +305,9 @@ function getMemento(): UIState {
         },
         imgPath: image.src,
         opacity: image.style.opacity,
+        imgWidth: image.width,
+        imgHeight: image.height,
+
     }
 }
 

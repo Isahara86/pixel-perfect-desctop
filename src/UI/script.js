@@ -89,6 +89,12 @@ function updateImage(imgPath, callBack) {
     }
     image.src = imgPath;
     image.onload = function () {
+        const width = image.naturalWidth;
+        const height = image.naturalHeight;
+        image.width = width;
+        image.height = height;
+        widthInput.value = width;
+        heightInput.value = height;
         callBack && callBack();
     };
 }
@@ -205,14 +211,17 @@ function initKeyboardEvents() {
 }
 function setMemento() {
     const uiState = managerGlobal.storeModule.getSettings().uiState;
+    console.log(uiState);
     updateOpacity(uiState.opacity);
     updateImage(uiState.imgPath, () => {
-        const width = image.naturalWidth;
-        const height = image.naturalHeight;
-        image.width = width;
-        image.height = height;
-        widthInput.value = width;
-        heightInput.value = height;
+        if (uiState.imgWidth && uiState.imgHeight) {
+            const width = uiState.imgWidth;
+            const height = uiState.imgHeight;
+            image.width = width;
+            image.height = height;
+            widthInput.value = width.toString();
+            heightInput.value = height.toString();
+        }
         imgContainer.scrollTop = uiState.scrollData.top;
         imgContainer.scrollLeft = uiState.scrollData.left;
     });
@@ -225,6 +234,8 @@ function getMemento() {
         },
         imgPath: image.src,
         opacity: image.style.opacity,
+        imgWidth: image.width,
+        imgHeight: image.height,
     };
 }
 function initDropImage() {

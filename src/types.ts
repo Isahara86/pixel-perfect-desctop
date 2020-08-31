@@ -43,6 +43,8 @@ declare namespace PixelPerfectDesktop {
         scrollData: ScrollData;
         imgPath: string;
         opacity: number;
+        imgWidth?: number;
+        imgHeight?: number;
     }
 
 }
