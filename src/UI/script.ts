@@ -31,14 +31,11 @@ function init() {
 function initImageResize() {
     widthInput.oninput = (e: any) => {
         let newWidth = e.target.value;
-        console.log(newWidth);
 
         const width = image.naturalWidth;
         const height = image.naturalHeight;
         const delta = newWidth / width;
         let newHeight: number = Math.round(height * delta);
-
-        console.log('width', newWidth, 'height', newHeight);
 
         newWidth = newWidth < 1 ? 1 : newWidth;
         newHeight = newHeight < 1 ? 1 : newHeight;
@@ -123,15 +120,6 @@ function updateImage(imgPath: string, callBack?: () => void) {
     image.src = imgPath;
 
     image.onload = function () {
-        const width = image.naturalWidth;
-        const height = image.naturalHeight;
-
-        image.width = width;
-        image.height = height;
-
-        widthInput.value = width;
-        heightInput.value = height;
-
         callBack && callBack();
     }
 }
@@ -279,8 +267,18 @@ function initKeyboardEvents(): void {
 function setMemento(): void {
     const uiState: UIState = managerGlobal.storeModule.getSettings().uiState;
 
+
     updateOpacity(uiState.opacity);
     updateImage(uiState.imgPath, () => {
+        const width = image.naturalWidth;
+        const height = image.naturalHeight;
+
+        image.width = width;
+        image.height = height;
+
+        widthInput.value = width;
+        heightInput.value = height;
+
         imgContainer.scrollTop = uiState.scrollData.top;
         imgContainer.scrollLeft = uiState.scrollData.left;
     });
